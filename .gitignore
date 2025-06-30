@@ -1,0 +1,23 @@
+# Arquivos de Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambiente Virtual
+venv/
+env/
+
+# Banco de Dados
+*.sqlite3
+db.sqlite3
+
+# Arquivos de Mídia
+media/
+
+# Arquivos de configuração de IDEs
+.vscode/
+.idea/
+
+# Arquivos de dependências
+*.egg-info/
