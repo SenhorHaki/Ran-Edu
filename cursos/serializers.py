@@ -36,7 +36,9 @@ class PostagemSerializer(serializers.ModelSerializer):
     autor = serializers.HiddenField(default=serializers.CurrentUserDefault())
     autor_username = serializers.ReadOnlyField(source='autor.username')
     comentarios = ComentarioSerializer(many=True, read_only=True)
+    num_comentarios = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Postagem
-        fields = ['id', 'curso', 'titulo', 'autor', 'autor_username', 'conteudo', 'data_criacao', 'comentarios']
+        # A lista de fields continua a mesma, pois ela já incluía o campo
+        fields = ['id', 'curso', 'titulo', 'autor', 'autor_username', 'conteudo', 'data_criacao', 'comentarios', 'num_comentarios']

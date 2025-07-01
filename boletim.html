@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Boletim</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0d47a1;
+            border-bottom: 2px solid #0d47a1;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        .boletim-tabela {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .boletim-tabela th, .boletim-tabela td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .boletim-tabela th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        .boletim-tabela td {
+            font-size: 1em;
+        }
+        .nota-final {
+            font-weight: bold;
+            color: #0d47a1;
+        }
+        #status-message {
+            text-align: center;
+            font-size: 1.1em;
+            color: #888;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meu Boletim</h1>
+        <table class="boletim-tabela">
+            <thead>
+                <tr>
+                    <th>Avaliação</th>
+                    <th>Curso (ID)</th>
+                    <th>Nota</th>
+                    <th>Data de Lançamento</th>
+                </tr>
+            </thead>
+            <tbody id="boletim-corpo">
+                <tr>
+                    <td colspan="4" id="status-message">Carregando notas...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const meuToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ'; // Cole um token válido aqui
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
+
+        function formatarData(dataString) {
+            const opcoes = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dataString).toLocaleDateString('pt-BR', opcoes);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const corpoTabela = document.getElementById('boletim-corpo');
+            const statusMessage = document.getElementById('status-message');
+
+            if (!meuToken || !meuToken.includes('.')) {
+                statusMessage.textContent = 'ERRO: Token de acesso não fornecido.';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/avaliacoes/meu-boletim/', { headers });
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar o boletim. O token pode estar inválido ou expirado.');
+                }
+                const notas = await response.json();
+
+                // Limpa a mensagem de "Carregando..."
+                corpoTabela.innerHTML = ''; 
+
+                if (notas.length === 0) {
+                    corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhuma nota lançada para você ainda.</td></tr>';
+                } else {
+                    // Para cada nota recebida da API, cria uma linha na tabela
+                    notas.forEach(nota => {
+                        const linha = document.createElement('tr');
+                        linha.innerHTML = `
+                            <td>${nota.avaliacao.titulo}</td>
+                            <td>${nota.avaliacao.curso}</td>
+                            <td class="nota-final">${parseFloat(nota.valor).toFixed(2)}</td>
+                            <td>${formatarData(nota.data_lancamento)}</td>
+                        `;
+                        corpoTabela.appendChild(linha);
+                    });
+                }
+            } catch (error) {
+                corpoTabela.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Erro: ${error.message}</td></tr>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'cursos.apps.CursosConfig',
     'usuarios.apps.UsuariosConfig',
     'gamificacao.apps.GamificacaoConfig',
+    'avaliacoes.apps.AvaliacoesConfig',
     
 ]
 
@@ -79,7 +80,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
 }
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=8),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "SIGNING_KEY": SECRET_KEY,
     "LEEWAY": timedelta(seconds=30),

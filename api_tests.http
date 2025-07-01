@@ -53,7 +53,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 
 ### (2) Listar Cursos (Com Token Manual)
 GET http://127.0.0.1:8000/api/cursos/cursos/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMDcwNDQ2LCJpYXQiOjE3NTEwNDE2NDYsImp0aSI6IjRmM2Y1NWE4OGNlMjRlOGM4MzM5ZjA3MDhmMzRiNjg0IiwidXNlcl9pZCI6MX0.bGfJxGm7gEF-dUJS7beYmJyKPLu9fUX204G94RhbCCU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
 
 ### (2.A) Criar um Curso para o Fórum
 POST http://127.0.0.1:8000/api/cursos/cursos/
@@ -70,7 +70,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ### (3) Criar uma Nova Postagem no Fórum
 POST http://127.0.0.1:8000/api/cursos/postagens/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMDcwNDQ2LCJpYXQiOjE3NTEwNDE2NDYsImp0aSI6IjRmM2Y1NWE4OGNlMjRlOGM4MzM5ZjA3MDhmMzRiNjg0IiwidXNlcl9pZCI6MX0.bGfJxGm7gEF-dUJS7beYmJyKPLu9fUX204G94RhbCCU
+Authorization: BearereyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM2ODkyLCJpYXQiOjE3NTEzMDgwOTIsImp0aSI6IjhkMDYzY2U1OTQ3ZTRhMzU5MjI3ZTJhMjc3YWJjODEwIiwidXNlcl9pZCI6MX0.Ev4BqPSdBYnCAQqInIIFi3f6Gv-nRYUcHzpS9RKswQI
+
 
 {
     "titulo": "Minha primeira postagem funcional!",
@@ -91,6 +92,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
     "curso": 2
 }
 
+
+### Listar Minhas Conquistas
+GET http://127.0.0.1:8000/api/gamificacao/minhas-conquistas/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
+
+
 ### Criar a primeira Aula de Teste
 POST http://127.0.0.1:8000/api/cursos/aulas/
 Content-Type: application/json
@@ -103,7 +110,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 }
 
 ### Marcar Aula como concluída
-POST http://127.0.0.1:8000/api/cursos/aulas/1/marcar_como_concluida/
+POST http://127.0.0.1:8000/api/cursos/aulas/1 Ryzen 7 9800X3D /marcar_como_concluida/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
 
 ### Criar a Aula de Teste dentro do Módulo de ID 2
@@ -116,3 +123,36 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
     "ordem": 1,
     "modulo": 2 
 }
+
+
+### Listar Meu Boletim (Notas)
+GET http://127.0.0.1:8000/api/avaliacoes/meu-boletim/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
+
+### Listar todas as Postagens do Fórum
+GET http://127.0.0.1:8000/api/cursos/postagens/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
+
+### Criar uma Nova Postagem para Teste
+POST http://127.0.0.1:8000/api/cursos/postagens/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
+
+{
+    "titulo": "Post para Testar Otimização",
+    "conteudo": "Este post terá a contagem de comentários.",
+    "curso": 4
+}
+
+### Listar Cursos para encontrar um ID
+GET http://127.0.0.1:8000/api/cursos/cursos/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
+
+### Listar todas as Postagens do Fórum
+GET http://127.0.0.1:8000/api/cursos/postagens/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
+
+
+### Listar Todas as Postagens (Para Testar Otimização)
+GET http://127.0.0.1:8000/api/cursos/postagens/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
