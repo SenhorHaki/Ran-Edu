@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'gamificacao.apps.GamificacaoConfig',
     'avaliacoes.apps.AvaliacoesConfig',
     'portal_responsavel.apps.PortalResponsavelConfig',
+    'notificacoes.apps.NotificacoesConfig', 
+    'dashboard.apps.DashboardConfig',
     
 ]
 

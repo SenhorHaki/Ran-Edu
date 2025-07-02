@@ -59,9 +59,9 @@
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
 
-                // Redireciona para a página do fórum após o login bem-sucedido
+                // Redireciona para a página home após o login bem-sucedido
                 alert('Login bem-sucedido! Redirecionando...');
-                window.location.href = 'forum.html';
+                window.location.href = 'home.html';
 
             } catch (error) {
                 errorMessage.textContent = error.message;

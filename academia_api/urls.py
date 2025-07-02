@@ -10,6 +10,8 @@ urlpatterns = [
     path('api/gamificacao/', include('gamificacao.urls')),
     path('api/avaliacoes/', include('avaliacoes.urls')),
     path('api/portal-responsavel/', include('portal_responsavel.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
+    path('api/notificacoes/', include('notificacoes.urls')),
 ]
 
 if settings.DEBUG:

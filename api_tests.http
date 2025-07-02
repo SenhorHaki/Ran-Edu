@@ -125,3 +125,74 @@ Content-Type: application/json
 ### Acessar o Portal do Responsável
 GET http://127.0.0.1:8000/api/portal-responsavel/meus-alunos/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzIyOTkxLCJpYXQiOjE3NTE0NTg5OTEsImp0aSI6ImEwMDQ0Mjg5MTBjYjQ4YWNhMmFjMzZhZjZkMmI2YjEzIiwidXNlcl9pZCI6NX0._0HCdEu92ahK7uDwmPl7Dzfjgg4HyGdBKwUUt2yKvV0
+
+
+### Login para Testar o Dashboard
+POST http://127.0.0.1:8000/api/auth/token/
+Content-Type: application/json
+
+{
+    "username": "aluno_lento",
+    "password": "1234"
+}
+
+
+### Obter Dados do Dashboard
+GET http://127.0.0.1:8000/api/dashboard/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzMxNDEwLCJpYXQiOjE3NTE0Njc0MTAsImp0aSI6IjRkOGJmNWE2MGI1NTRhZTlhYTEwYzdkZWU3ODA0YWM4IiwidXNlcl9pZCI6MX0.qq45XsbfiIv3xkYcBR-jma90pyg6CdxNUALkxkbfUqw
+
+
+### Criar Curso para Teste de Alerta
+POST http://127.0.0.1:8000/api/cursos/cursos/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxMzg3LCJpYXQiOjE3NTE0NzczODcsImp0aSI6IjUzYzYwYjNkMzBlMjQ3YjBiODdjYmZkYzE1M2NjMTY3IiwidXNlcl9pZCI6MX0.03JDy3O0zLCfAIMGi7ElItH97JXE5k9yfNkuFsQ5ngw
+
+{
+    "titulo": "Curso Teste de Inatividade",
+    "carga_horaria": 2
+}
+
+### Criar Módulo para Teste de Alerta
+POST http://127.0.0.1:8000/api/cursos/modulos/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxMzg3LCJpYXQiOjE3NTE0NzczODcsImp0aSI6IjUzYzYwYjNkMzBlMjQ3YjBiODdjYmZkYzE1M2NjMTY3IiwidXNlcl9pZCI6MX0.03JDy3O0zLCfAIMGi7ElItH97JXE5k9yfNkuFsQ5ngw
+
+{
+    "titulo": "Módulo Único",
+    "ordem": 1,
+    "curso": 5 
+}
+
+
+### Criar Aula 1 do Módulo
+POST http://127.0.0.1:8000/api/cursos/aulas/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxMzg3LCJpYXQiOjE3NTE0NzczODcsImp0aSI6IjUzYzYwYjNkMzBlMjQ3YjBiODdjYmZkYzE1M2NjMTY3IiwidXNlcl9pZCI6MX0.03JDy3O0zLCfAIMGi7ElItH97JXE5k9yfNkuFsQ5ngw
+
+{
+    "titulo": "Primeira Etapa",
+    "ordem": 1,
+    "modulo": 5 
+}
+
+###
+### Criar Aula 2 do Módulo
+POST http://127.0.0.1:8000/api/cursos/aulas/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxMzg3LCJpYXQiOjE3NTE0NzczODcsImp0aSI6IjUzYzYwYjNkMzBlMjQ3YjBiODdjYmZkYzE1M2NjMTY3IiwidXNlcl9pZCI6MX0.03JDy3O0zLCfAIMGi7ElItH97JXE5k9yfNkuFsQ5ngw
+
+{
+    "titulo": "Segunda Etapa",
+    "ordem": 2,
+    "modulo": 5
+}
+
+
+### Inscrever aluno_lento no Curso de Inatividade
+POST http://127.0.0.1:8000/api/cursos/cursos/5/inscrever/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxNTM5LCJpYXQiOjE3NTE0Nzc1MzksImp0aSI6IjhmZGE2MWI5YzhiNjQ3ZDJhYmI0ODMxM2VkMjUzYWE5IiwidXNlcl9pZCI6MTF9.gNiMej_17Qd4pMyyuQxHygERLnGVYKuuXovVkZaNgzc
+
+### aluno_lento conclui a Primeira Etapa
+POST http://127.0.0.1:8000/api/cursos/aulas/8/marcar_como_concluida/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxNTM5LCJpYXQiOjE3NTE0Nzc1MzksImp0aSI6IjhmZGE2MWI5YzhiNjQ3ZDJhYmI0ODMxM2VkMjUzYWE5IiwidXNlcl9pZCI6MTF9.gNiMej_17Qd4pMyyuQxHygERLnGVYKuuXovVkZaNgzc
+
