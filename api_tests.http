@@ -1,158 +1,127 @@
-### ==============================================
-### TESTE DE AUTENTICAÇÃO E CURSOS
-### ==============================================
-
 ###
-### (1) Fazer Login e Salvar o Token de Acesso
-# Esta requisição faz o login e salva o token de acesso em uma variável chamada accessToken
+# PASSO 1: FAZER LOGIN E COPIAR O TOKEN
+# Execute esta requisição e copie o valor do "access" token da resposta.
+###
 # @name login
 POST http://127.0.0.1:8000/api/auth/token/
 Content-Type: application/json
 
 {
-    //"username": "admin",
-    //"password": "1234"
     //"username": "aluno_comum",
-    //"password": "teste123"
+    //"password": "1234"
     "username": "aluno_gamer",
     "password": "1234"
-    
+    //"username": "admin",
+    //"password": "1234"
 }
 
-# @accessToken = {{login.response.body.access}}
-###___________________________________________________
-    ### 2. Inscrever aluno_gamer no Curso de ID 2
-POST http://127.0.0.1:8000/api/cursos/cursos/2/inscrever/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
 
-### Listar todas as Aulas para encontrar um ID
-GET http://127.0.0.1:8000/api/cursos/aulas/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
-
-### 3. Marcar Aula de ID 1 como concluída
-POST http://127.0.0.1:8000/api/cursos/aulas/1/marcar_como_concluida/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
+###
+# ====================================================================
+# PASSO 2: COLE O TOKEN DE ACESSO NA LINHA ABAIXO
+# ====================================================================
+# ====================================================================
+###
 
 
 
-
+### Teste de Filtro: Buscar posts apenas do Curso de ID 4
+GET http://127.0.0.1:8000/api/cursos/postagens/?curso=4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjM3MDA0LCJpYXQiOjE3NTEzNzMwMDQsImp0aSI6IjQ1MTk4ZTNjMWEyZjRiMmE4MzhjNDdlNjI1MTc3YzE5IiwidXNlcl9pZCI6NH0.juuloLaYXtOBpc47vY_WRPzfJwTZADAJQ__Sqy44low
 
 
 
 
 
 ###
-### (2) Listar Cursos (Requisição Autenticada)
-# Este comando usa o token que foi salvo acima para se autenticar.
-
-#GET http://127.0.0.1:8000/api/cursos/cursos/
-#Authorization: Bearer {{accessToken}}
-
-
+# PASSO 3: TESTAR O FILTRO POR CURSO
+# Deve retornar apenas as postagens do curso com o ID especificado.
+###
+GET http://127.0.0.1:8000/api/cursos/postagens/?curso=4
+Authorization: Bearer {{@token}}
 
 
-### (2) Listar Cursos (Com Token Manual)
-GET http://127.0.0.1:8000/api/cursos/cursos/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
-
-### (2.A) Criar um Curso para o Fórum
-POST http://127.0.0.1:8000/api/cursos/cursos/
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMDcwNDQ2LCJpYXQiOjE3NTEwNDE2NDYsImp0aSI6IjRmM2Y1NWE4OGNlMjRlOGM4MzM5ZjA3MDhmMzRiNjg0IiwidXNlcl9pZCI6MX0.bGfJxGm7gEF-dUJS7beYmJyKPLu9fUX204G94RhbCCU
-
-{
-    "titulo": "Meu Curso para o Fórum",
-    "carga_horaria": 15
-}
+###
+# PASSO 4: TESTAR A BUSCA POR TEXTO
+# Deve retornar apenas as postagens que contêm a palavra "Python".
+###
+GET http://127.0.0.1:8000/api/cursos/postagens/?search=Python
+Authorization: Bearer {{@token}}
 
 
 
-### (3) Criar uma Nova Postagem no Fórum
-POST http://127.0.0.1:8000/api/cursos/postagens/
-Content-Type: application/json
-Authorization: BearereyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM2ODkyLCJpYXQiOjE3NTEzMDgwOTIsImp0aSI6IjhkMDYzY2U1OTQ3ZTRhMzU5MjI3ZTJhMjc3YWJjODEwIiwidXNlcl9pZCI6MX0.Ev4BqPSdBYnCAQqInIIFi3f6Gv-nRYUcHzpS9RKswQI
-
-
-{
-    "titulo": "Minha primeira postagem funcional!",
-    "conteudo": "Agora sim, a API está aceitando a postagem.",
-    "curso": 2
-}
 
 
 
-### Criar um Módulo para o Curso 2
+### Inscrever aluno_gamer no Curso de ID 4
+POST http://127.0.0.1:8000/api/cursos/cursos/4/inscrever/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5MzQ1LCJpYXQiOjE3NTEzODUzNDUsImp0aSI6IjIyNGVmYjUwNjVmNTQyMDA4Y2Q2Y2NjNWYxYWZhYzMxIiwidXNlcl9pZCI6NH0.NKS8TB0-88nWdlNgHfph5H8B2UKJ4QjMTHpNhMqHp2A
+
+
+### 2. LISTAR AULAS (para encontrar um ID)
+GET http://127.0.0.1:8000/api/cursos/aulas/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+### 3. TESTE DE GAMIFICAÇÃO (usando o ID correto)
+POST http://127.0.0.1:8000/api/cursos/aulas/{id_da_aula}/marcar_como_concluida/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+
+### Criar Módulo de Teste
 POST http://127.0.0.1:8000/api/cursos/modulos/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
 
 {
-    "titulo": "Módulo de Teste para Gamificação",
+    "titulo": "Módulo Inicial",
     "ordem": 1,
-    "curso": 2
-}
-
-
-### Listar Minhas Conquistas
-GET http://127.0.0.1:8000/api/gamificacao/minhas-conquistas/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
-
-
-### Criar a primeira Aula de Teste
-POST http://127.0.0.1:8000/api/cursos/aulas/
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
-
-{
-    "titulo": "Minha Primeira Aula de Teste",
-    "ordem": 1,
-    "modulo": 1 
-}
-
-### Marcar Aula como concluída
-POST http://127.0.0.1:8000/api/cursos/aulas/1 Ryzen 7 9800X3D /marcar_como_concluida/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
-
-### Criar a Aula de Teste dentro do Módulo de ID 2
-POST http://127.0.0.1:8000/api/cursos/aulas/
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzI1Nzg0LCJpYXQiOjE3NTEyOTY5ODQsImp0aSI6IjcxODc2OWMwNGQ0YzRiOGQ4Y2ZkYmQ0YmUyZGE2ODU4IiwidXNlcl9pZCI6NH0.iuIhljJ-jZQDAxfhP3_rFfoqP-Ez94ZDbGANylqwJaM
-
-{
-    "titulo": "Aula Inaugural de Teste",
-    "ordem": 1,
-    "modulo": 2 
-}
-
-
-### Listar Meu Boletim (Notas)
-GET http://127.0.0.1:8000/api/avaliacoes/meu-boletim/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
-
-### Listar todas as Postagens do Fórum
-GET http://127.0.0.1:8000/api/cursos/postagens/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
-
-### Criar uma Nova Postagem para Teste
-POST http://127.0.0.1:8000/api/cursos/postagens/
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
-
-{
-    "titulo": "Post para Testar Otimização",
-    "conteudo": "Este post terá a contagem de comentários.",
     "curso": 4
 }
 
-### Listar Cursos para encontrar um ID
-GET http://127.0.0.1:8000/api/cursos/cursos/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
-
-### Listar todas as Postagens do Fórum
-GET http://127.0.0.1:8000/api/cursos/postagens/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
 
 
-### Listar Todas as Postagens (Para Testar Otimização)
-GET http://127.0.0.1:8000/api/cursos/postagens/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzM3NTg1LCJpYXQiOjE3NTEzMDg3ODUsImp0aSI6IjEwZWNlNTUwYjM0MjRjNDM5Y2FlMWU1NDcyZDE0MTg3IiwidXNlcl9pZCI6NH0.PfJaya9fKXwd0QbUv2YVnDzI5iejVtLmGszHCtj5bFQ
+### Criar Aula de Teste no Módulo 4
+POST http://127.0.0.1:8000/api/cursos/aulas/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+{
+    "titulo": "Primeira Aula de Teste",
+    "ordem": 1,
+    "modulo": 4
+}
+
+
+
+
+### TESTE FINAL: Marcar Aula 7 como concluída
+POST http://127.0.0.1:8000/api/cursos/aulas/7/marcar_como_concluida/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+
+### Marcar Aula 7 como concluída (para atingir 100%)
+POST http://127.0.0.1:8000/api/cursos/aulas/7/marcar_como_concluida/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+### Marcar Aula 7 como concluída para atingir 100%
+POST http://127.0.0.1:8000/api/cursos/aulas/7/marcar_como_concluida/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+
+
+### Baixar o Certificado da Inscrição de ID 2
+GET http://127.0.0.1:8000/api/cursos/inscricoes/2/gerar-certificado/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjQ5NzM4LCJpYXQiOjE3NTEzODU3MzgsImp0aSI6ImM0ZjgzN2U1YzIzZjQ5YzE5NjNjM2RhYmQ0OGE5NTdlIiwidXNlcl9pZCI6NH0.gY9IWquk8tRMDuOWI9rTo82l3QqRXSfoY6MvxWI7Ck4
+
+
+### Login como Responsável (pai_joao)
+POST http://127.0.0.1:8000/api/auth/token/
+Content-Type: application/json
+
+{
+    "username": "pai_joao",
+    "password": "Amodanova3.0"
+}
+### Acessar o Portal do Responsável
+GET http://127.0.0.1:8000/api/portal-responsavel/meus-alunos/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzIyOTkxLCJpYXQiOjE3NTE0NTg5OTEsImp0aSI6ImEwMDQ0Mjg5MTBjYjQ4YWNhMmFjMzZhZjZkMmI2YjEzIiwidXNlcl9pZCI6NX0._0HCdEu92ahK7uDwmPl7Dzfjgg4HyGdBKwUUt2yKvV0

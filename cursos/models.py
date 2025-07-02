@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import uuid
 
 class Curso(models.Model):
     titulo = models.CharField(max_length=200)
@@ -51,13 +52,10 @@ class Postagem(models.Model):
     def __str__(self):
         return self.titulo
 
-
 class Comentario(models.Model):
-    """
-    Represents a comment in response to a Post.
-    """
     postagem = models.ForeignKey(Postagem, on_delete=models.CASCADE, related_name='comentarios')
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='respostas')
     conteudo = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_edicao = models.DateTimeField(auto_now=True)
@@ -65,3 +63,15 @@ class Comentario(models.Model):
     def __str__(self):
         return f'Comentário de {self.autor.username} em "{self.postagem.titulo}"'
     
+# Em cursos/models.py, no final do arquivo
+
+class Certificado(models.Model):
+    """
+    Registra um certificado emitido para uma inscrição concluída.
+    """
+    inscricao = models.OneToOneField(Inscricao, on_delete=models.CASCADE, related_name='certificado')
+    data_emissao = models.DateTimeField(auto_now_add=True)
+    codigo_validacao = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def __str__(self):
+        return f"Certificado para {self.inscricao.aluno} no curso {self.inscricao.curso}"

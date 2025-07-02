@@ -8,7 +8,8 @@ from .views import (
     AulaViewSet,
     MinhasInscricoesView,
     PostagemViewSet,
-    ComentarioViewSet
+    ComentarioViewSet,
+    GerarCertificadoView
 )
 
 router = DefaultRouter()
@@ -21,4 +22,6 @@ router.register(r'comentarios', ComentarioViewSet, basename='comentario')
 urlpatterns = [
     path('', include(router.urls)),    
     path('meus-cursos/', MinhasInscricoesView.as_view(), name='meus-cursos'),
+    path('inscricoes/<int:inscricao_id>/gerar-certificado/', GerarCertificadoView.as_view(), name='gerar-certificado'),
+    
 ]

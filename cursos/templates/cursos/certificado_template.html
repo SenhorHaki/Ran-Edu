@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificado de Conclusão</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .certificado {
+            width: 800px;
+            height: 565px;
+            border: 10px solid #0d47a1;
+            padding: 40px;
+            background-color: white;
+            position: relative;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .titulo {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: #0d47a1;
+            margin-bottom: 40px;
+        }
+        .texto-principal {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .nome-aluno {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 30px;
+        }
+        .nome-curso {
+            font-weight: 700;
+        }
+        .rodape {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .assinatura {
+            border-top: 1px solid #333;
+            width: 250px;
+            padding-top: 5px;
+            font-size: 14px;
+        }
+        .codigo-validacao {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 10px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificado">
+        <div class="titulo">CERTIFICADO</div>
+
+        <div class="texto-principal">
+            Certificamos que
+        </div>
+
+        <div class="nome-aluno">
+            {{ aluno_nome }}
+        </div>
+
+        <div class="texto-principal">
+            concluiu com sucesso o curso de <strong class="nome-curso">{{ curso_titulo }}</strong>,
+            com carga horária de {{ carga_horaria }} horas, em {{ data_emissao }}.
+        </div>
+
+        <div class="rodape">
+            <div class="assinatura">
+                Ran-Edu Plataforma
+                <br>
+                CEO
+            </div>
+            <div class="assinatura">
+                Instrutor do Curso
+            </div>
+        </div>
+        
+        <div class="codigo-validacao">
+            Código de Validação: {{ codigo_validacao }}
+        </div>
+    </div>
+</body>
+</html>

@@ -9,6 +9,8 @@ urlpatterns = [
     path('api/auth/', include('usuarios.urls')),
     path('api/gamificacao/', include('gamificacao.urls')),
     path('api/avaliacoes/', include('avaliacoes.urls')),
+    path('api/portal-responsavel/', include('portal_responsavel.urls')),
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Responsável</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .nav-logout { max-width: 1000px; margin: 0 auto 10px auto; text-align: right; font-size: 0.9em; }
+        .nav-logout a { color: #0d47a1; text-decoration: none; font-weight: bold; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #0d47a1; margin-bottom: 25px; }
+        .aluno-card { background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .aluno-card h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #333; }
+        .info-section { margin-top: 20px; }
+        .info-section h3 { font-size: 1.1em; color: #333; margin-bottom: 10px; }
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table th, .info-table td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
+        .info-table th { background-color: #f8f9fa; font-size: 0.9em; }
+        .empty-state { color: #888; font-style: italic; }
+        #status-message { text-align: center; font-size: 1.2em; color: #888; padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="nav-logout"><a href="forum.html">Ir para o Fórum</a> | <a href="#" id="logout-button">Sair</a></div>
+    <div class="container">
+        <h1>Portal do Responsável</h1>
+        <div id="alunos-container">
+            <p id="status-message">Carregando dados dos alunos...</p>
+        </div>
+    </div>
+
+    <script>
+        const meuToken = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Lógica de Logout
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.clear(); // Limpa todo o localStorage
+                    window.location.href = 'login.html';
+                });
+            }
+
+            // Lógica de Autenticação
+            if (!meuToken) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const alunosContainer = document.getElementById('alunos-container');
+            const statusMessage = document.getElementById('status-message');
+
+            try {
+                // Busca os dados na API
+                const response = await fetch('http://127.0.0.1:8000/api/portal-responsavel/meus-alunos/', { headers });
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar os dados. Faça o login como um usuário do tipo "Responsável".');
+                }
+                const alunos = await response.json();
+                
+                statusMessage.style.display = 'none';
+                alunosContainer.innerHTML = ''; 
+
+                if (alunos.length === 0) {
+                    alunosContainer.innerHTML = '<p id="status-message">Nenhum aluno associado a você.</p>';
+                } else {
+                    // Para cada aluno retornado, cria um "card"
+                    alunos.forEach(aluno => {
+                        const card = document.createElement('div');
+                        card.classList.add('aluno-card');
+
+                        // Gera a tabela de Cursos em Andamento
+                        let cursosHtml = '<p class="empty-state">Nenhum curso em andamento.</p>';
+                        if (aluno.cursos_em_andamento.length > 0) {
+                            cursosHtml = '<table class="info-table"><thead><tr><th>Curso</th><th>Progresso</th></tr></thead><tbody>';
+                            aluno.cursos_em_andamento.forEach(inscricao => {
+                                cursosHtml += `<tr><td>${inscricao.titulo_curso}</td><td>${inscricao.progresso}%</td></tr>`;
+                            });
+                            cursosHtml += '</tbody></table>';
+                        }
+                        
+                        // Gera a tabela de Boletim
+                        let boletimHtml = '<p class="empty-state">Nenhuma nota lançada.</p>';
+                        if (aluno.boletim.length > 0) {
+                            boletimHtml = '<table class="info-table"><thead><tr><th>Avaliação</th><th>Nota</th></tr></thead><tbody>';
+                            aluno.boletim.forEach(nota => {
+                                boletimHtml += `<tr><td>${nota.titulo_avaliacao}</td><td style="font-weight: bold; color: #0d47a1;">${parseFloat(nota.valor).toFixed(2)}</td></tr>`;
+                            });
+                            boletimHtml += '</tbody></table>';
+                        }
+
+                        // Monta o card completo do aluno
+                        card.innerHTML = `
+                            <h2>${aluno.first_name || aluno.username}</h2>
+                            <div class="info-section">
+                                <h3>Cursos em Andamento</h3>
+                                ${cursosHtml}
+                            </div>
+                            <div class="info-section">
+                                <h3>Boletim</h3>
+                                ${boletimHtml}
+                            </div>
+                        `;
+                        alunosContainer.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                alunosContainer.innerHTML = `<p id="status-message" style="color: red;">Erro: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

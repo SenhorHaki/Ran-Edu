@@ -15,7 +15,9 @@
         .post-autor i { margin-right: 8px; }
         .post-conteudo { line-height: 1.6; }
         .comentarios-container { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-        .comentario { display: flex; align-items: flex-start; gap: 12px; padding: 15px 10px; }
+        .comentario-wrapper { padding: 10px 0; }
+        .comentario-wrapper:not(:last-child) { border-bottom: 1px solid #e9ecef; }
+        .comentario { display: flex; align-items: flex-start; gap: 12px; }
         .comentario-avatar { background-color: #ced4da; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .comentario-avatar i { color: #fff; font-size: 1.5em; }
         .comentario-main-content { flex-grow: 1; }
@@ -30,18 +32,21 @@
         .comentario-acoes button:hover { text-decoration: underline; }
         .dropdown { position: relative; }
         .btn-menu { background: none; border: none; cursor: pointer; color: #888; font-size: 1.1em; padding: 5px; }
-        .btn-menu:hover { background-color: #f1f1f1; border-radius: 50%; }
+        .btn-menu:hover { background-color: #f1f1f1; border-radius: 50%;}
         .dropdown-menu { display: none; position: absolute; right: 0; top: 25px; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 100; border-radius: 8px; border: 1px solid #ddd; padding: 5px 0; }
         .dropdown-menu button { color: black; padding: 10px 15px; text-decoration: none; display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-size: 0.9em; }
         .dropdown-menu button:hover { background-color: #f1f1f1; }
         .dropdown-menu button i { margin-right: 12px; width: 15px; text-align: center; }
         .dropdown-menu button.dropdown-item-vermelho { color: #d32f2f; }
-        .form-comentario, .form-edicao-comentario  { display: none !important;margin-top: 15px; }
-        .form-comentario textarea, .form-edicao-comentario textarea { width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; padding: 8px; font-size: 1em; }
-        .form-comentario button, .form-edicao-comentario button { background-color: #0d47a1; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .form-edicao-botoes { text-align: right; margin-top: 5px; display: flex; gap: 5px; justify-content: flex-end; }
+        .form-edicao-comentario { display: none !important; margin-top: 10px; }
+        .form-comentario, .form-edicao-comentario, .form-resposta { margin-top: 15px; }
+        .form-comentario textarea, .form-edicao-comentario textarea, .form-resposta textarea { width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; padding: 8px; font-size: 1em; }
+        .form-comentario button, .form-edicao-comentario button, .form-resposta button { background-color: #0d47a1; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .form-edicao-botoes, .form-resposta-botoes { text-align: right; margin-top: 5px; display: flex; gap: 5px; justify-content: flex-end; }
         #status-message { text-align: center; font-size: 1.2em; color: #888; padding: 20px; }
         .show { display: block; }
+        .respostas-container { margin-left: 52px; padding-left: 15px; border-left: 2px solid #e9ecef; }
+        .form-resposta { display: none; }
     </style>
 </head>
 <body>
@@ -52,160 +57,147 @@
     </div>
 
     <script>
-        const meuToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzEwMzcwLCJpYXQiOjE3NTEyODE1NzAsImp0aSI6IjFmMDEzOTJkZTBhZDRiOTBiMjkxOTM5MDJhMmYyNjUyIiwidXNlcl9pZCI6M30.Q3kLojKItThqBdjL-3aswiOJ0AzdVQ1lSM4Vikhv1kg'; 
+        const meuToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjM4OTY2LCJpYXQiOjE3NTEzNzQ5NjYsImp0aSI6IjFmYjI3NDYwOTI2NzQ2MThiOWY2MDRkOTk0YTA0ZDE0IiwidXNlcl9pZCI6MX0.BbawDh_KnxlZeI1d6yypineLfJkbcPNRTCmF7yM2wJw'; 
         const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
         let usuarioLogadoId = null;
 
-        function formatarTempoAtras(dataString) {
-            const agora = new Date(); const dataPostagem = new Date(dataString);
-            const s = Math.round((agora - dataPostagem) / 1000); const m = Math.round(s / 60);
-            const h = Math.round(s / 3600); const d = Math.round(s / 86400); const w = Math.round(d / 7);
-            if (s < 60) return 'agora'; if (m < 60) return `${m}m`; if (h < 24) return `${h}h`;
-            if (d < 7) return `${d}d`; return `${w}s`;
-        }
+        function formatarTempoAtras(dataString) { const agora = new Date(); const dataPostagem = new Date(dataString); const s = Math.round((agora - dataPostagem) / 1000); const m = Math.round(s / 60); const h = Math.round(s / 3600); const d = Math.round(s / 86400); const w = Math.round(d / 7); if (s < 60) return 'agora'; if (m < 60) return `${m}m`; if (h < 24) return `${h}h`; if (d < 7) return `${d}d`; return `${w}s`; }
+        window.onclick = function(event) { if (!event.target.closest('.dropdown')) { document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show')); } }
+        function toggleDropdown(comentarioId) { const menuAtual = document.getElementById(`dropdown-${comentarioId}`); const estaAberto = menuAtual.classList.contains('show'); document.querySelectorAll('.dropdown-menu.show').forEach(menuAberto => { if (menuAberto.id !== `dropdown-${comentarioId}`) { menuAberto.classList.remove('show'); } }); menuAtual.classList.toggle('show'); }
+        async function apagarComentario(comentarioId) { if (!confirm('Tem certeza?')) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'DELETE', headers: headers }); if (res.status === 204) { document.getElementById(`wrapper-comentario-${comentarioId}`).remove(); } else { const errData = await res.json(); throw new Error(errData.detail || 'Falha ao apagar.'); } } catch (e) { alert(`Erro: ${e.message}`); } }
+        async function enviarComentario(event) { event.preventDefault(); const form = event.target; const postId = form.dataset.postId; const postAutorId = form.dataset.postAutorId; const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return; try { const res = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers: headers, body: JSON.stringify({ conteudo: conteudo, postagem: postId }) }); if (!res.ok) throw new Error('Falha ao enviar o comentário.'); const novo = await res.json(); document.querySelector(`#post-${postId} .comentarios-container`).insertAdjacentHTML('beforeend', criarHtmlComentario(novo, postAutorId)); textarea.value = ''; } catch (e) { alert(`Erro: ${e.message}`); } }
+        function mostrarFormEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'none'; div.querySelector('.comentario-acoes').style.display = 'none'; div.querySelector('.form-edicao-comentario').style.display = 'block'; const textarea = div.querySelector('.form-edicao-comentario textarea'); textarea.value = div.querySelector('.comentario-texto').textContent.trim(); textarea.focus(); } }
+        function cancelarEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'block'; div.querySelector('.comentario-acoes').style.display = 'block'; div.querySelector('.form-edicao-comentario').style.display = 'none'; } }
+        async function salvarEdicao(event, comentarioId) { event.preventDefault(); const form = event.target; const textarea = form.querySelector('textarea'); const novoConteudo = textarea.value.trim(); if (!novoConteudo) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'PATCH', headers: headers, body: JSON.stringify({ conteudo: novoConteudo }) }); if (!res.ok) throw new Error('Falha ao salvar.'); const atualizado = await res.json(); const textoDiv = document.getElementById(`comentario-texto-${comentarioId}`); textoDiv.textContent = atualizado.conteudo; const headerDiv = document.getElementById(`wrapper-comentario-${comentarioId}`).querySelector('.comentario-autor-info'); let edicaoSpan = headerDiv.querySelector('.timestamp-edicao-wrapper'); if (!edicaoSpan) { edicaoSpan = document.createElement('span'); edicaoSpan.className = 'timestamp-edicao-wrapper'; headerDiv.appendChild(edicaoSpan); } edicaoSpan.innerHTML = ` • <span class="timestamp">(editado ${formatarTempoAtras(atualizado.data_edicao)})</span>`; cancelarEdicao(comentarioId); } catch (e) { alert(`Erro: ${e.message}`); } }
 
-        window.onclick = function(event) {
-            if (!event.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show'));
-            }
-        }
+        // --- INÍCIO DA LÓGICA ATUALIZADA ---
 
-        function toggleDropdown(comentarioId) {
-            const menuAtual = document.getElementById(`dropdown-${comentarioId}`);
-            const estaAberto = menuAtual.classList.contains('show');
-            document.querySelectorAll('.dropdown-menu.show').forEach(menuAberto => {
-                if (menuAberto.id !== `dropdown-${comentarioId}`) {
-                    menuAberto.classList.remove('show');
+        function prepararFormularioDeResposta(topLevelCommentId, usernameToMention) {
+            // Esconde todos os outros formulários de resposta para manter a interface limpa
+            document.querySelectorAll('.form-resposta').forEach(form => {
+                if (form.id !== `form-resposta-${topLevelCommentId}`) {
+                    form.style.display = 'none';
                 }
             });
-            menuAtual.classList.toggle('show');
-        }
 
-        function mostrarFormEdicao(comentarioId) {
-            const comentarioDiv = document.getElementById(`comentario-${comentarioId}`);
-            comentarioDiv.querySelector('.comentario-texto').style.display = 'none';
-            comentarioDiv.querySelector('.comentario-acoes').style.display = 'none';
-            const formEdicao = comentarioDiv.querySelector('.form-edicao-comentario');
-            formEdicao.style.display = 'block';
-            const textarea = formEdicao.querySelector('textarea');
-            textarea.value = comentarioDiv.querySelector('.comentario-texto').textContent.trim();
-            textarea.focus();
-        }
-
-        function cancelarEdicao(comentarioId) {
-            const comentarioDiv = document.getElementById(`comentario-${comentarioId}`);
-            comentarioDiv.querySelector('.comentario-texto').style.display = 'block';
-            comentarioDiv.querySelector('.comentario-acoes').style.display = 'block';
-            comentarioDiv.querySelector('.form-edicao-comentario').style.display = 'none';
-        }
-
-        async function salvarEdicao(event, comentarioId) {
-            event.preventDefault();
-            const form = event.target; const textarea = form.querySelector('textarea');
-            const novoConteudo = textarea.value.trim(); if (!novoConteudo) return;
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'PATCH', headers, body: JSON.stringify({ conteudo: novoConteudo }) });
-                if (!response.ok) throw new Error('Falha ao salvar a edição.');
-                const atualizado = await response.json();
-                const textoDiv = document.getElementById(`comentario-texto-${comentarioId}`);
-                textoDiv.textContent = atualizado.conteudo;
-                cancelarEdicao(comentarioId);
-            } catch (error) { alert(`Erro: ${error.message}`); }
-        }
-
-        async function apagarComentario(comentarioId) {
-            if (!confirm('Tem certeza?')) return;
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'DELETE', headers });
-                if (response.status === 204) { document.getElementById(`comentario-${comentarioId}`).remove(); } 
-                else { const errorData = await response.json(); throw new Error(errorData.detail || 'Falha ao apagar.'); }
-            } catch (error) { alert(`Erro: ${error.message}`); }
-        }
-        
-        async function enviarComentario(event) {
-            event.preventDefault();
-            const form = event.target; const postId = form.dataset.postId; const postAutorId = form.dataset.postAutorId;
-            const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return;
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers, body: JSON.stringify({ conteudo, postagem: postId }) });
-                if (!response.ok) throw new Error('Falha ao enviar o comentário.');
-                const novoComentario = await response.json();
-                document.querySelector(`#post-${postId} .comentarios-container`).insertAdjacentHTML('beforeend', criarHtmlComentario(novoComentario, postAutorId));
-                textarea.value = '';
-            } catch (error) { alert(`Erro: ${error.message}`); }
-        }
-
-        function criarHtmlComentario(comentario, postAutorId) {
-            let menuItensHtml = `<button class="dropdown-item" onclick="alert('Funcionalidade de compartilhar ainda não implementada.')"><i class="fas fa-share-square"></i> Compartilhar</button>`;
-            if (usuarioLogadoId && usuarioLogadoId === comentario.autor) {
-                menuItensHtml += `<button class="dropdown-item" onclick="mostrarFormEdicao(${comentario.id})"><i class="fas fa-pencil-alt"></i> Editar</button><button class="dropdown-item dropdown-item-vermelho" onclick="apagarComentario(${comentario.id})"><i class="fas fa-trash-alt"></i> Apagar</button>`;
-            } else if (usuarioLogadoId) {
-                menuItensHtml += `<button class="dropdown-item dropdown-item-vermelho" onclick="alert('Funcionalidade de denúncia ainda não implementada.')"><i class="fas fa-flag"></i> Denunciar</button><button class="dropdown-item dropdown-item-vermelho" onclick="alert('Funcionalidade de bloquear usuário ainda não implementada.')"><i class="fas fa-user-slash"></i> Bloquear Usuário</button>`;
+            const form = document.getElementById(`form-resposta-${topLevelCommentId}`);
+            if (form) {
+                const textarea = form.querySelector('textarea');
+                // Se estamos respondendo a uma resposta, pré-preenchemos com @username
+                textarea.value = usernameToMention ? `@${usernameToMention} ` : '';
+                form.style.display = 'block';
+                textarea.focus();
             }
-            let edicaoHtml = '';
-            const dataCriacao = new Date(comentario.data_criacao); const dataEdicao = new Date(comentario.data_edicao);
-            if ((dataEdicao - dataCriacao) / 1000 > 60) { edicaoHtml = `<span class="timestamp">• editado</span>`; }
-            let seloAutorHtml = '';
-            if (comentario.autor === postAutorId) { seloAutorHtml = `<span class="selo-autor">Autor</span>`; }
-            return `
-                <div class="comentario" id="comentario-${comentario.id}">
-                    <div class="comentario-avatar"><i class="fas fa-user-circle"></i></div>
-                    <div class="comentario-main-content">
-                        <div class="comentario-header">
-                            <div class="comentario-autor-info">
-                                <span class="comentario-autor-nome">${comentario.autor_username}</span> 
-                                <span class="timestamp">${formatarTempoAtras(comentario.data_criacao)}</span>
-                                ${seloAutorHtml} ${edicaoHtml}
-                            </div>
-                            <div class="dropdown">
-                                <button onclick="toggleDropdown(${comentario.id})" class="btn-menu" title="Mais opções"><i class="fas fa-ellipsis-v"></i></button>
-                                <div id="dropdown-${comentario.id}" class="dropdown-menu">${menuItensHtml}</div>
-                            </div>
-                        </div>
-                        <div class="comentario-texto" id="comentario-texto-${comentario.id}">${comentario.conteudo}</div>
-                        <div class="comentario-acoes"><button onclick="alert('Funcionalidade de responder ainda não implementada.')">Responder</button></div>
-                        <form class="form-edicao-comentario" onsubmit="salvarEdicao(event, ${comentario.id})">
-                            <textarea rows="3">${comentario.conteudo}</textarea>
-                            <div class="form-edicao-botoes"><button type="button" onclick="cancelarEdicao(${comentario.id})">Cancelar</button><button type="submit">Salvar</button></div>
+        }
+
+        function cancelarResposta(topLevelCommentId) {
+            const form = document.getElementById(`form-resposta-${topLevelCommentId}`);
+            if (form) {
+                form.style.display = 'none';
+                form.querySelector('textarea').value = '';
+            }
+        }
+
+        async function enviarResposta(event, parentId, postAutorId) {
+            event.preventDefault();
+            const form = event.target;
+            const textarea = form.querySelector('textarea');
+            const conteudo = textarea.value.trim();
+            if (!conteudo) return;
+
+            try {
+                // A requisição sempre envia o `parentId` do comentário de topo
+                const response = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers: headers, body: JSON.stringify({ conteudo, parent: parentId }) });
+                if (!response.ok) throw new Error('Falha ao enviar a resposta.');
+                
+                const novaResposta = await response.json();
+                const containerDeRespostas = document.getElementById(`respostas-de-${parentId}`);
+                // Adiciona a nova resposta na tela, renderizando-a como nível 1 (sem mais aninhamento)
+                containerDeRespostas.insertAdjacentHTML('beforeend', criarHtmlComentario(novaResposta, postAutorId, 1));
+                
+                textarea.value = '';
+                cancelarResposta(parentId);
+            } catch (error) { alert(`Erro: ${error.message}`); }
+        }
+
+        function criarHtmlComentario(comentario, postAutorId, nivel = 0) {
+            let menuItensHtml = `<button class="dropdown-item" onclick="alert('Compartilhar não implementado.')"><i class="fas fa-share-square"></i> Compartilhar</button>`;
+            if (usuarioLogadoId && usuarioLogadoId === comentario.autor) { menuItensHtml += `<button class="dropdown-item" onclick="mostrarFormEdicao(${comentario.id})"><i class="fas fa-pencil-alt"></i> Editar</button><button class="dropdown-item dropdown-item-vermelho" onclick="apagarComentario(${comentario.id})"><i class="fas fa-trash-alt"></i> Apagar</button>`; } 
+            else if (usuarioLogadoId) { menuItensHtml += `<button class="dropdown-item dropdown-item-vermelho" onclick="alert('Denúncia não implementada.')"><i class="fas fa-flag"></i> Denunciar</button><button class="dropdown-item dropdown-item-vermelho" onclick="alert('Bloquear não implementado.')"><i class="fas fa-user-slash"></i> Bloquear</button>`; }
+            
+            let edicaoHtml = ''; const dataCriacao = new Date(comentario.data_criacao); const dataEdicao = new Date(comentario.data_edicao); if ((dataEdicao - dataCriacao) / 1000 > 60) { edicaoHtml = `<span class="timestamp-edicao-wrapper"> • <span class="timestamp">(editado)</span></span>`; }
+            let seloAutorHtml = ''; if (comentario.autor === postAutorId) { seloAutorHtml = `<span class="selo-autor">Autor</span>`; }
+            
+            // Lógica do botão Responder atualizada
+            let responderHtml = '';
+            if (usuarioLogadoId) {
+                // O ID do pai de topo é o pai do comentário atual, ou o próprio ID do comentário se ele for de topo
+                const topLevelParentId = comentario.parent || comentario.id;
+                responderHtml = `<button onclick="prepararFormularioDeResposta(${topLevelParentId}, '${comentario.autor_username}')">Responder</button>`;
+            }
+
+            // Lógica recursiva para renderizar as respostas
+            let respostasHtml = '';
+            if (nivel === 0 && comentario.respostas && comentario.respostas.length > 0) {
+                respostasHtml = comentario.respostas.map(resposta => criarHtmlComentario(resposta, postAutorId, nivel + 1)).join('');
+            }
+            
+            // O formulário de resposta só existe para comentários de topo (nível 0)
+            let formRespostaHtml = '';
+            if (nivel === 0) {
+                formRespostaHtml = `
+                    <div class="respostas-container">
+                        <form class="form-resposta" id="form-resposta-${comentario.id}" onsubmit="enviarResposta(event, ${comentario.id}, ${postAutorId})">
+                            <textarea placeholder="Escreva sua resposta..." rows="2"></textarea>
+                            <div class="form-resposta-botoes"><button type="button" onclick="cancelarResposta(${comentario.id})">Cancelar</button><button type="submit">Enviar</button></div>
                         </form>
+                    </div>`;
+            }
+
+            return `
+                <div class="comentario-wrapper" id="wrapper-comentario-${comentario.id}">
+                    <div class="comentario">
+                        <div class="comentario-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="comentario-main-content">
+                            <div class="comentario-header">
+                                <div class="comentario-autor-info">${seloAutorHtml}<span class="comentario-autor-nome">${comentario.autor_username}</span><span class="timestamp">${formatarTempoAtras(comentario.data_criacao)}</span>${edicaoHtml}</div>
+                                <div class="dropdown"><button onclick="toggleDropdown(${comentario.id})" class="btn-menu"><i class="fas fa-ellipsis-v"></i></button><div id="dropdown-${comentario.id}" class="dropdown-menu">${menuItensHtml}</div></div>
+                            </div>
+                            <div class="comentario-texto" id="comentario-texto-${comentario.id}">${comentario.conteudo}</div>
+                            <div class="comentario-acoes">${responderHtml}</div>
+                            <form class="form-edicao-comentario" onsubmit="salvarEdicao(event, ${comentario.id})"><textarea rows="3"></textarea><div class="form-edicao-botoes"><button type="button" onclick="cancelarEdicao(${comentario.id})">Cancelar</button><button type="submit">Salvar</button></div></form>
+                        </div>
                     </div>
-                </div>
-            `;
+                    <div class="respostas-container" id="respostas-de-${comentario.id}">${respostasHtml}</div>
+                    ${formRespostaHtml}
+                </div>`;
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            const postsContainer = document.getElementById('posts-container');
-            const statusMessage = document.getElementById('status-message');
+            const postsContainer = document.getElementById('posts-container'); const statusMessage = document.getElementById('status-message');
             if (!meuToken || !meuToken.includes('.')) { statusMessage.textContent = 'ERRO: Token não fornecido.'; statusMessage.style.color = 'red'; return; }
             try {
                 statusMessage.textContent = 'Carregando...';
                 const userResponse = await fetch('http://127.0.0.1:8000/api/auth/me/', { headers });
-                if (!userResponse.ok) throw new Error('Token inválido ou expirado. Obtenha um novo.');
+                if (!userResponse.ok) throw new Error('Token inválido.');
                 const usuario = await userResponse.json();
                 usuarioLogadoId = usuario.id;
                 const postsResponse = await fetch('http://127.0.0.1:8000/api/cursos/postagens/', { headers });
                 if (!postsResponse.ok) throw new Error('Não foi possível carregar as postagens.');
                 const posts = await postsResponse.json();
-                if (posts.length === 0) {
-                    statusMessage.textContent = 'Nenhuma postagem encontrada.';
-                } else {
-                    statusMessage.style.display = 'none';
-                    postsContainer.innerHTML = '';
+                if (posts.length === 0) { statusMessage.textContent = 'Nenhuma postagem encontrada.'; } 
+                else {
+                    statusMessage.style.display = 'none'; postsContainer.innerHTML = '';
                     posts.forEach(post => {
-                        const comentariosHtml = post.comentarios.map(comentario => criarHtmlComentario(comentario, post.autor)).join('');
-                        const postElement = document.createElement('div');
-                        postElement.id = `post-${post.id}`;
-                        postElement.classList.add('post');
-                        postElement.innerHTML = `<div class="post-titulo">${post.titulo}</div><div class="post-autor"><span>por: ${post.autor_username} • <span class="timestamp">${formatarTempoAtras(post.data_criacao)}</span></span></div><div class="post-conteudo">${post.conteudo}</div><div class="comentarios-container">${comentariosHtml}</div><form class="form-comentario" data-post-id="${post.id}" data-post-autor-id="${post.autor}"><textarea placeholder="Escreva seu comentário..." rows="2"></textarea><button type="submit">Enviar</button></form>`;
+                        const comentariosDeTopo = post.comentarios.filter(c => c.parent === null);
+                        const comentariosHtml = comentariosDeTopo.map(comentario => criarHtmlComentario(comentario, post.autor, 0)).join('');
+                        const postElement = document.createElement('div'); postElement.id = `post-${post.id}`; postElement.classList.add('post');
+                        postElement.innerHTML = `<div class="post-titulo">${post.titulo}</div><div class="post-autor"><span>por: ${post.autor_username} • <span class="timestamp">${formatarTempoAtras(post.data_criacao)}</span></span></div><div class="post-conteudo">${post.conteudo}</div><div class="comentarios-container">${comentariosHtml}</div><form class="form-comentario" data-post-id="${post.id}" data-post-autor-id="${post.autor}"><textarea placeholder="Escreva seu comentário aqui..." rows="2"></textarea><button type="submit">Enviar</button></form>`;
                         postsContainer.appendChild(postElement);
                     });
                     document.querySelectorAll('.form-comentario').forEach(form => form.addEventListener('submit', enviarComentario));
                 }
-            } catch (error) {
-                postsContainer.innerHTML = '';
-                statusMessage.textContent = `Falha ao carregar o fórum. Erro: ${error.message}`;
-                statusMessage.style.color = 'red';
-            }
+            } catch (error) { postsContainer.innerHTML = ''; statusMessage.textContent = `Falha ao carregar o fórum. Erro: ${error.message}`; }
         });
     </script>
 </body>

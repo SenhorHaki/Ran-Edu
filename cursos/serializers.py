@@ -24,21 +24,38 @@ class CursoSerializer(serializers.ModelSerializer):
         model = Curso
         fields = '__all__'
 
-class ComentarioSerializer(serializers.ModelSerializer):
+class RespostaSerializer(serializers.ModelSerializer):
+    """
+    Este é um Serializer SIMPLES, apenas para as respostas.
+    Ele não tenta aninhar mais respostas dentro dele, evitando o loop.
+    """
     autor_username = serializers.ReadOnlyField(source='autor.username')
 
     class Meta:
         model = Comentario
-        fields = ['id', 'postagem', 'autor', 'autor_username', 'conteudo', 'data_criacao', 'data_edicao']
-        extra_kwargs = {'autor': {'read_only': True}}
+        fields = ['id', 'postagem', 'parent', 'autor', 'autor_username', 'conteudo', 'data_criacao', 'data_edicao']
 
+class ComentarioSerializer(serializers.ModelSerializer):
+    autor_username = serializers.ReadOnlyField(source='autor.username')
+    respostas = RespostaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Comentario
+        fields = ['id', 'postagem', 'parent', 'autor', 'autor_username', 'conteudo', 'data_criacao', 'data_edicao', 'respostas']
+        extra_kwargs = {
+            'autor': {'read_only': True},
+            # Dizemos que postagem e parent não são obrigatórios no input
+            'postagem': {'required': False, 'allow_null': True},
+            'parent': {'required': False, 'allow_null': True},
+    }
+        
 class PostagemSerializer(serializers.ModelSerializer):
     autor = serializers.HiddenField(default=serializers.CurrentUserDefault())
     autor_username = serializers.ReadOnlyField(source='autor.username')
     comentarios = ComentarioSerializer(many=True, read_only=True)
+
     num_comentarios = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Postagem
-        # A lista de fields continua a mesma, pois ela já incluía o campo
         fields = ['id', 'curso', 'titulo', 'autor', 'autor_username', 'conteudo', 'data_criacao', 'comentarios', 'num_comentarios']
