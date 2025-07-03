@@ -132,7 +132,7 @@ POST http://127.0.0.1:8000/api/auth/token/
 Content-Type: application/json
 
 {
-    "username": "aluno_lento",
+    "username": "admin",
     "password": "1234"
 }
 
@@ -195,4 +195,40 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ### aluno_lento conclui a Primeira Etapa
 POST http://127.0.0.1:8000/api/cursos/aulas/8/marcar_como_concluida/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxNTM5LCJpYXQiOjE3NTE0Nzc1MzksImp0aSI6IjhmZGE2MWI5YzhiNjQ3ZDJhYmI0ODMxM2VkMjUzYWE5IiwidXNlcl9pZCI6MTF9.gNiMej_17Qd4pMyyuQxHygERLnGVYKuuXovVkZaNgzc
+
+
+### Listar Minhas Notificações
+GET http://127.0.0.1:8000/api/notificacoes/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQxMzg3LCJpYXQiOjE3NTE0NzczODcsImp0aSI6IjUzYzYwYjNkMzBlMjQ3YjBiODdjYmZkYzE1M2NjMTY3IiwidXNlcl9pZCI6MX0.03JDy3O0zLCfAIMGi7ElItH97JXE5k9yfNkuFsQ5ngw
+
+
+### Listar Materiais de Recomendação
+GET http://127.0.0.1:8000/api/recomendacoes/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMzQ1MDU1LCJpYXQiOjE3NTE0ODEwNTUsImp0aSI6IjdlODdjYzFhZTQ3MTRjYjQ4YWQzNGU4NDU4YTVmYTM3IiwidXNlcl9pZCI6MTF9.4OIQQ8wWLIuSK5OeP1KTIsEbTnRilHc4277sof6e5ME
+
+
+
+### Listar Recursos da Biblioteca (como Professor)
+GET http://127.0.0.1:8000/api/biblioteca/recursos/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNDA3NDgzLCJpYXQiOjE3NTE1NDM0ODMsImp0aSI6Ijc3ZjAxZTZjYWFiZjQ0MWU4ZTEwMDMwNDhiNDJkNjBkIiwidXNlcl9pZCI6MTJ9.iVhgilaq3FlevSx_9AcylkGGyEc78xhwN90JYB3IcEE
+
+### Listar Minha Agenda de Eventos
+GET http://127.0.0.1:8000/api/agendamento/minha-agenda/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNDA5OTQ1LCJpYXQiOjE3NTE1NDU5NDUsImp0aSI6IjgwMzUxYjZjZGU3YzRmNGJhMDNkZTQwYTAzMmRiODBiIiwidXNlcl9pZCI6NH0.RA4X2-ybPChHWD7umWQL4paIkusMfEREKNJDAB4r1P0
+
+
+### Login como Professor
+POST http://127.0.0.1:8000/api/auth/token/
+Content-Type: application/json
+
+{
+    "username": "aluno_gamer",
+    "password": "1234"
+}
+
+### Listar Recursos da Biblioteca
+GET http://127.0.0.1:8000/api/biblioteca/recursos/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNDExNTgxLCJpYXQiOjE3NTE1NDc1ODEsImp0aSI6IjM4NjY0NWE0ZWJhNjRlMWU4ODY4NGIxNDFjMDI5OTQ5IiwidXNlcl9pZCI6NH0.8hv_5PoRavODQgaGoPEZtrnmX2JwKoOH3QmjOIhp7tY
+
+
 

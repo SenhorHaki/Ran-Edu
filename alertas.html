@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Notificações</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .nav-logout { max-width: 900px; margin: 0 auto 10px auto; text-align: right; font-size: 0.9em; }
+        .nav-logout a { color: #0d47a1; text-decoration: none; font-weight: bold; }
+        .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-bottom: 25px; }
+        .alerta-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #ddd; border-left-width: 5px; border-left-color: #f57c00; border-radius: 5px; margin-bottom: 10px; }
+        .alerta-item.lido { border-left-color: #ccc; opacity: 0.7; }
+        .alerta-icone { font-size: 1.5em; color: #f57c00; }
+        .alerta-item.lido .alerta-icone { color: #999; }
+        .alerta-texto { flex-grow: 1; }
+        .alerta-texto p { margin: 0; }
+        .alerta-texto .data { font-size: 0.8em; color: #777; }
+        .btn-marcar-lida { background-color: #f0f0f0; border: 1px solid #ccc; color: #333; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8em; }
+        .btn-marcar-lida:hover { background-color: #e0e0e0; }
+        #status-message { text-align: center; font-size: 1.1em; color: #888; padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="nav-logout"><a href="home.html">Voltar ao Dashboard</a> | <a href="#" id="logout-button">Sair</a></div>
+    <div class="container">
+        <h1>Painel de Alertas</h1>
+        <div id="alertas-container">
+            <p id="status-message">Carregando alertas...</p>
+        </div>
+    </div>
+
+    <script>
+        const meuToken = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
+
+        async function marcarComoLida(notificacaoId) {
+            const item = document.getElementById(`alerta-${notificacaoId}`);
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/notificacoes/${notificacaoId}/marcar_como_lida/`, {
+                    method: 'POST',
+                    headers: headers
+                });
+                if (!response.ok) throw new Error('Falha ao marcar como lida.');
+
+                // Atualiza a interface sem recarregar a página
+                item.classList.add('lido');
+                const botao = item.querySelector('.btn-marcar-lida');
+                if(botao) botao.remove();
+
+            } catch (error) {
+                alert(`Erro: ${error.message}`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) { logoutButton.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; }); }
+            if (!meuToken) { window.location.href = 'login.html'; return; }
+
+            const alertasContainer = document.getElementById('alertas-container');
+            const statusMessage = document.getElementById('status-message');
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/notificacoes/minhas/', { headers });
+                if (!response.ok) { throw new Error('Falha ao buscar notificações.'); }
+                const notificacoes = await response.json();
+                
+                statusMessage.style.display = 'none';
+                alertasContainer.innerHTML = ''; 
+
+                if (notificacoes.length === 0) {
+                    alertasContainer.innerHTML = '<p id="status-message">Você não tem nenhum alerta no momento.</p>';
+                } else {
+                    notificacoes.forEach(alerta => {
+                        const item = document.createElement('div');
+                        item.id = `alerta-${alerta.id}`;
+                        item.className = alerta.lida ? 'alerta-item lido' : 'alerta-item';
+                        
+                        let botaoHtml = '';
+                        if (!alerta.lida) {
+                            botaoHtml = `<button class="btn-marcar-lida" onclick="marcarComoLida(${alerta.id})">Marcar como lida</button>`;
+                        }
+
+                        item.innerHTML = `
+                            <div class="alerta-icone"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alerta-texto">
+                                <p>${alerta.mensagem}</p>
+                                <p class="data">${new Date(alerta.data_criacao).toLocaleString('pt-BR')}</p>
+                            </div>
+                            ${botaoHtml}
+                        `;
+                        alertasContainer.appendChild(item);
+                    });
+                }
+            } catch (error) {
+                alertasContainer.innerHTML = `<p id="status-message" style="color: red;">Erro: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

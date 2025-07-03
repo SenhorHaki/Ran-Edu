@@ -11,7 +11,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Iniciando verificação de alunos inativos...'))
         
-        # Define o que consideramos "inatividade" (ex: 7 dias)
         #limite_inatividade = timezone.now() - timedelta(days=7)
         limite_inatividade = timezone.now() - timedelta(seconds=0)
 
@@ -21,16 +20,12 @@ class Command(BaseCommand):
         alunos_notificados = []
 
         for inscricao in inscricoes_ativas:
-            # Encontra a data da última aula concluída pelo aluno naquele curso
             ultima_aula_concluida = AulaConcluida.objects.filter(
                 aluno=inscricao.aluno,
                 aula__modulo__curso=inscricao.curso
             ).order_by('-data_conclusao').first()
 
-            # Se o aluno já concluiu alguma aula e a última foi há mais de 7 dias...
             if ultima_aula_concluida and ultima_aula_concluida.data_conclusao < limite_inatividade:
-                # Lógica para encontrar o professor (por enquanto, vamos notificar o admin)
-                # No futuro, o curso teria um campo 'professor'
                 admin_user = Usuario.objects.filter(is_superuser=True).first()
                 
                 if admin_user:

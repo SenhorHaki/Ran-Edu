@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .nav-logout { max-width: 900px; margin: 0 auto 10px auto; text-align: right; font-size: 0.9em; }
-        .nav-logout a { color: #0d47a1; text-decoration: none; font-weight: bold; }
+        .header { max-width: 900px; margin: 0 auto 20px auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header h1.logo { font-size: 1.5em; color: #0d47a1; margin: 0; }
+        .main-nav a { color: #333; text-decoration: none; font-weight: bold; font-size: 0.9em; padding: 8px 12px; border-radius: 5px; transition: background-color 0.2s; }
+        .main-nav a:hover, .main-nav a.active { background-color: #e3f2fd; color: #0d47a1; }
         .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-bottom: 25px; }
+        h1.page-title { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; }
         .certificado-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
         .certificado-item:not(:last-child) { border-bottom: 1px solid #eee; }
         .certificado-info { display: flex; align-items: center; gap: 15px; }
@@ -22,9 +24,18 @@
     </style>
 </head>
 <body>
-    <div class="nav-logout"><a href="forum.html">Ir para o Fórum</a> | <a href="#" id="logout-button">Sair</a></div>
+    <header class="header">
+        <h1 class="logo">Ran-Edu</h1>
+        <nav class="main-nav">
+            <a href="home.html">Dashboard</a>
+            <a href="forum.html">Fórum</a>
+            <a href="certificados.html" class="active">Certificados</a>
+            <a href="#" id="logout-button">Sair</a>
+        </nav>
+    </header>
+
     <div class="container">
-        <h1>Meus Certificados</h1>
+        <h1 class="page-title">Meus Certificados</h1>
         <div id="certificados-container">
             <p id="status-message">Verificando cursos concluídos...</p>
         </div>
@@ -32,51 +43,34 @@
 
     <script>
         const meuToken = localStorage.getItem('accessToken');
-        const headers = { 'Authorization': `Bearer ${meuToken}` }; // Headers para JSON
-        const headersPDF = { 'Authorization': `Bearer ${meuToken}` }; // Headers para PDF
+        const headers = { 'Authorization': `Bearer ${meuToken}` };
 
-        // Função para iniciar o download do PDF
         async function baixarCertificado(inscricaoId, nomeCurso) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/cursos/inscricoes/${inscricaoId}/gerar-certificado/`, { headers: headersPDF });
-                if (!response.ok) {
-                    throw new Error('Não foi possível gerar o certificado.');
-                }
-                // Converte a resposta em um "blob" (um objeto de arquivo)
+                const response = await fetch(`http://127.0.0.1:8000/api/cursos/inscricoes/${inscricaoId}/gerar-certificado/`, { headers: headers });
+                if (!response.ok) { throw new Error('Não foi possível gerar o certificado.'); }
                 const blob = await response.blob();
-                // Cria uma URL temporária para este arquivo na memória do navegador
                 const url = window.URL.createObjectURL(blob);
-                // Cria um link invisível, clica nele para iniciar o download, e depois o remove.
                 const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
+                a.style.display = 'none'; a.href = url;
                 a.download = `certificado-${nomeCurso}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                a.remove();
-            } catch (error) {
-                alert(`Erro ao baixar o certificado: ${error.message}`);
-            }
+                document.body.appendChild(a); a.click();
+                window.URL.revokeObjectURL(url); a.remove();
+            } catch (error) { alert(`Erro ao baixar o certificado: ${error.message}`); }
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Lógica de Logout e verificação de token...
             const logoutButton = document.getElementById('logout-button');
             if (logoutButton) { logoutButton.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; }); }
             if (!meuToken) { window.location.href = 'login.html'; return; }
             
             const certificadosContainer = document.getElementById('certificados-container');
-            const statusMessage = document.getElementById('status-message');
-
+            
             try {
-                // Usamos o endpoint 'meus-cursos' que já retorna as inscrições e o progresso
-                const response = await fetch('http://127.0.0.1:8000/api/cursos/meus-cursos/', { headers: headers });
+                const response = await fetch('http://127.0.0.1:8000/api/cursos/meus-cursos/', { headers: {'Content-Type': 'application/json', ...headers} });
                 if (!response.ok) { throw new Error('Falha ao buscar seus cursos.'); }
                 
                 const inscricoes = await response.json();
-                
-                // Filtramos no frontend apenas as inscrições com 100% de progresso
                 const cursosConcluidos = inscricoes.filter(inscricao => inscricao.progresso >= 100);
 
                 certificadosContainer.innerHTML = ''; 

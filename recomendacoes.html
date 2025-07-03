@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materiais Recomendados</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .nav-logout { max-width: 900px; margin: 0 auto 10px auto; text-align: right; font-size: 0.9em; }
+        .nav-logout a { color: #0d47a1; text-decoration: none; font-weight: bold; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-bottom: 25px; }
+        .recomendacao-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .recomendacao-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .recomendacao-card-body { padding: 20px; flex-grow: 1; }
+        .recomendacao-card-footer { background-color: #f8f9fa; padding: 15px 20px; border-top: 1px solid #ddd; text-align: right; }
+        .tipo-icone { font-size: 1.2em; margin-right: 10px; color: #0d47a1; }
+        .recomendacao-titulo { font-size: 1.1em; font-weight: bold; color: #333; margin-bottom: 8px; display: flex; align-items: center; }
+        .recomendacao-descricao { font-size: 0.9em; color: #666; line-height: 1.5; }
+        .btn-acessar { background-color: #1976d2; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.9em; }
+        .btn-acessar:hover { background-color: #1565c0; }
+        #status-message { text-align: center; font-size: 1.2em; color: #888; padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="nav-logout"><a href="home.html">Voltar ao Dashboard</a> | <a href="#" id="logout-button">Sair</a></div>
+    <div class="container">
+        <h1>Materiais Recomendados</h1>
+        <div id="recomendacoes-container" class="recomendacao-grid">
+            <p id="status-message">Carregando recomendações...</p>
+        </div>
+    </div>
+
+    <script>
+        const meuToken = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
+
+        // Função para escolher o ícone certo baseado no tipo de material
+        function getIconePorTipo(tipo) {
+            switch (tipo) {
+                case 'VIDEO': return 'fas fa-video';
+                case 'ARTIGO': return 'far fa-newspaper';
+                case 'LIVRO': return 'fas fa-book-open';
+                default: return 'fas fa-link';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) { logoutButton.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; }); }
+            if (!meuToken) { window.location.href = 'login.html'; return; }
+            
+            const recomendacoesContainer = document.getElementById('recomendacoes-container');
+            const statusMessage = document.getElementById('status-message');
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/recomendacoes/', { headers });
+                if (!response.ok) { throw new Error('Falha ao buscar as recomendações.'); }
+                const recomendacoes = await response.json();
+                
+                statusMessage.style.display = 'none';
+                recomendacoesContainer.innerHTML = ''; 
+
+                if (recomendacoes.length === 0) {
+                    recomendacoesContainer.innerHTML = '<p id="status-message">Nenhum material recomendado para seus cursos no momento.</p>';
+                } else {
+                    recomendacoes.forEach(material => {
+                        const card = document.createElement('div');
+                        card.classList.add('recomendacao-card');
+                        
+                        const iconeClass = getIconePorTipo(material.tipo);
+
+                        card.innerHTML = `
+                            <div class="recomendacao-card-body">
+                                <div class="recomendacao-titulo">
+                                    <i class="${iconeClass} tipo-icone"></i>
+                                    <span>${material.titulo}</span>
+                                </div>
+                                <p class="recomendacao-descricao">${material.descricao || 'Sem descrição.'}</p>
+                            </div>
+                            <div class="recomendacao-card-footer">
+                                <a href="${material.link}" target="_blank" class="btn-acessar">Acessar Material</a>
+                            </div>
+                        `;
+                        recomendacoesContainer.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                recomendacoesContainer.innerHTML = `<p id="status-message" style="color: red;">Erro: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

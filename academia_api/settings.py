@@ -23,7 +23,10 @@ INSTALLED_APPS = [
     'portal_responsavel.apps.PortalResponsavelConfig',
     'notificacoes.apps.NotificacoesConfig', 
     'dashboard.apps.DashboardConfig',
-    
+    'recomendacoes.apps.RecomendacoesConfig',
+    'biblioteca.apps.BibliotecaConfig',
+    'agendamento.apps.AgendamentoConfig',
+   
 ]
 
 

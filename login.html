@@ -35,34 +35,25 @@
 
     <script>
         document.getElementById('login-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Impede o recarregamento da página
-
+            event.preventDefault();
             const username = event.target.username.value;
             const password = event.target.password.value;
             const errorMessage = document.getElementById('error-message');
-            errorMessage.textContent = ''; // Limpa mensagens de erro antigas
-
+            errorMessage.textContent = '';
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/auth/token/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-
                 const data = await response.json();
-
                 if (!response.ok) {
                     throw new Error(data.detail || 'Usuário ou senha inválidos.');
                 }
-
-                // O PONTO-CHAVE: Salva o token no localStorage do navegador
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
-
-                // Redireciona para a página home após o login bem-sucedido
-                alert('Login bem-sucedido! Redirecionando...');
+                // Redireciona para a nova home.html
                 window.location.href = 'home.html';
-
             } catch (error) {
                 errorMessage.textContent = error.message;
             }

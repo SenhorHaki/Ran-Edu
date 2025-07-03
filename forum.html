@@ -6,17 +6,22 @@
     <title>Fórum do Curso</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #1c1e21; }
-        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; }
-        .post { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .header { max-width: 800px; margin: 0 auto 20px auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header h1.logo { font-size: 1.5em; color: #0d47a1; margin: 0; }
+        .main-nav a { color: #333; text-decoration: none; font-weight: bold; font-size: 0.9em; padding: 8px 12px; border-radius: 5px; transition: background-color 0.2s; }
+        .main-nav a:hover, .main-nav a.active { background-color: #e3f2fd; color: #0d47a1; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1.page-title { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; }
+        .post { padding: 15px; margin-bottom: 20px; }
+        .post:not(:last-child) { border-bottom: 1px solid #ddd; }
         .post-titulo { font-size: 1.3em; font-weight: bold; margin-bottom: 5px;}
         .post-autor { font-size: 0.9em; color: #666; margin-bottom: 10px; display: flex; align-items: center; }
         .post-autor i { margin-right: 8px; }
+        .timestamp { font-weight: normal; color: #8e8e8e; }
         .post-conteudo { line-height: 1.6; }
-        .comentarios-container { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
+        .comentarios-container { margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
         .comentario-wrapper { padding: 10px 0; }
-        .comentario-wrapper:not(:last-child) { border-bottom: 1px solid #e9ecef; }
         .comentario { display: flex; align-items: flex-start; gap: 12px; }
         .comentario-avatar { background-color: #ced4da; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .comentario-avatar i { color: #fff; font-size: 1.5em; }
@@ -24,7 +29,6 @@
         .comentario-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .comentario-autor-info { font-size: 0.9em; color: #666; margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
         .comentario-autor-nome { font-weight: bold; color: #262626; }
-        .timestamp { font-weight: normal; color: #8e8e8e; }
         .selo-autor { background-color: #e7f3ff; color: #007bff; font-size: 0.7em; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
         .comentario-texto { font-size: 0.95em; white-space: pre-wrap; word-wrap: break-word; }
         .comentario-acoes { margin-top: 10px; }
@@ -38,115 +42,83 @@
         .dropdown-menu button:hover { background-color: #f1f1f1; }
         .dropdown-menu button i { margin-right: 12px; width: 15px; text-align: center; }
         .dropdown-menu button.dropdown-item-vermelho { color: #d32f2f; }
-        .form-edicao-comentario { display: none !important; margin-top: 10px; }
+        .form-edicao-comentario { display: none; margin-top: 10px; }
         .form-comentario, .form-edicao-comentario, .form-resposta { margin-top: 15px; }
         .form-comentario textarea, .form-edicao-comentario textarea, .form-resposta textarea { width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; padding: 8px; font-size: 1em; }
         .form-comentario button, .form-edicao-comentario button, .form-resposta button { background-color: #0d47a1; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .form-edicao-botoes, .form-resposta-botoes { text-align: right; margin-top: 5px; display: flex; gap: 5px; justify-content: flex-end; }
         #status-message { text-align: center; font-size: 1.2em; color: #888; padding: 20px; }
         .show { display: block; }
-        .respostas-container { margin-left: 52px; padding-left: 15px; border-left: 2px solid #e9ecef; }
+        .respostas-container { margin-left: 52px; padding-left: 15px; border-left: 2px solid #e9ecef; margin-top: 10px; }
         .form-resposta { display: none; }
     </style>
 </head>
 <body>
+    <header class="header">
+        <h1 class="logo">Ran-Edu</h1>
+        <nav class="main-nav">
+            <a href="home.html">Dashboard</a>
+            <a href="forum.html" class="active">Fórum</a>
+            <a href="#" id="logout-button">Sair</a>
+        </nav>
+    </header>
+
     <div class="container">
-        <h1>Fórum do Curso</h1>
-        <div id="posts-container"></div>
-        <p id="status-message">Carregando...</p>
+        <h1 class="page-title">Fórum</h1>
+        <div id="posts-container">
+            <p id="status-message">Carregando...</p>
+        </div>
     </div>
 
     <script>
-        const meuToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMjM4OTY2LCJpYXQiOjE3NTEzNzQ5NjYsImp0aSI6IjFmYjI3NDYwOTI2NzQ2MThiOWY2MDRkOTk0YTA0ZDE0IiwidXNlcl9pZCI6MX0.BbawDh_KnxlZeI1d6yypineLfJkbcPNRTCmF7yM2wJw'; 
+        const meuToken = localStorage.getItem('accessToken');
         const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
         let usuarioLogadoId = null;
 
+        // --- FUNÇÕES JAVASCRIPT COMPLETAS E CORRIGIDAS ---
+
+        // Funções de formatação e UI
         function formatarTempoAtras(dataString) { const agora = new Date(); const dataPostagem = new Date(dataString); const s = Math.round((agora - dataPostagem) / 1000); const m = Math.round(s / 60); const h = Math.round(s / 3600); const d = Math.round(s / 86400); const w = Math.round(d / 7); if (s < 60) return 'agora'; if (m < 60) return `${m}m`; if (h < 24) return `${h}h`; if (d < 7) return `${d}d`; return `${w}s`; }
         window.onclick = function(event) { if (!event.target.closest('.dropdown')) { document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show')); } }
         function toggleDropdown(comentarioId) { const menuAtual = document.getElementById(`dropdown-${comentarioId}`); const estaAberto = menuAtual.classList.contains('show'); document.querySelectorAll('.dropdown-menu.show').forEach(menuAberto => { if (menuAberto.id !== `dropdown-${comentarioId}`) { menuAberto.classList.remove('show'); } }); menuAtual.classList.toggle('show'); }
-        async function apagarComentario(comentarioId) { if (!confirm('Tem certeza?')) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'DELETE', headers: headers }); if (res.status === 204) { document.getElementById(`wrapper-comentario-${comentarioId}`).remove(); } else { const errData = await res.json(); throw new Error(errData.detail || 'Falha ao apagar.'); } } catch (e) { alert(`Erro: ${e.message}`); } }
-        async function enviarComentario(event) { event.preventDefault(); const form = event.target; const postId = form.dataset.postId; const postAutorId = form.dataset.postAutorId; const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return; try { const res = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers: headers, body: JSON.stringify({ conteudo: conteudo, postagem: postId }) }); if (!res.ok) throw new Error('Falha ao enviar o comentário.'); const novo = await res.json(); document.querySelector(`#post-${postId} .comentarios-container`).insertAdjacentHTML('beforeend', criarHtmlComentario(novo, postAutorId)); textarea.value = ''; } catch (e) { alert(`Erro: ${e.message}`); } }
-        function mostrarFormEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'none'; div.querySelector('.comentario-acoes').style.display = 'none'; div.querySelector('.form-edicao-comentario').style.display = 'block'; const textarea = div.querySelector('.form-edicao-comentario textarea'); textarea.value = div.querySelector('.comentario-texto').textContent.trim(); textarea.focus(); } }
+        
+        // Funções para o formulário de RESPOSTA
+        function prepararFormularioDeResposta(topLevelCommentId, usernameToMention) { document.querySelectorAll('.form-resposta').forEach(f => f.style.display = 'none'); const form = document.getElementById(`form-resposta-${topLevelCommentId}`); if (form) { const textarea = form.querySelector('textarea'); textarea.value = usernameToMention ? `@${usernameToMention} ` : ''; form.style.display = 'block'; textarea.focus(); } }
+        function cancelarResposta(topLevelCommentId) { const form = document.getElementById(`form-resposta-${topLevelCommentId}`); if (form) { form.style.display = 'none'; form.querySelector('textarea').value = ''; } }
+        
+        // Funções para o formulário de EDIÇÃO
+        function mostrarFormEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'none'; div.querySelector('.comentario-acoes').style.display = 'none'; const formEdicao = div.querySelector('.form-edicao-comentario'); formEdicao.style.display = 'block'; const textarea = formEdicao.querySelector('textarea'); textarea.value = div.querySelector('.comentario-texto').textContent.trim(); textarea.focus(); } }
         function cancelarEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'block'; div.querySelector('.comentario-acoes').style.display = 'block'; div.querySelector('.form-edicao-comentario').style.display = 'none'; } }
-        async function salvarEdicao(event, comentarioId) { event.preventDefault(); const form = event.target; const textarea = form.querySelector('textarea'); const novoConteudo = textarea.value.trim(); if (!novoConteudo) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'PATCH', headers: headers, body: JSON.stringify({ conteudo: novoConteudo }) }); if (!res.ok) throw new Error('Falha ao salvar.'); const atualizado = await res.json(); const textoDiv = document.getElementById(`comentario-texto-${comentarioId}`); textoDiv.textContent = atualizado.conteudo; const headerDiv = document.getElementById(`wrapper-comentario-${comentarioId}`).querySelector('.comentario-autor-info'); let edicaoSpan = headerDiv.querySelector('.timestamp-edicao-wrapper'); if (!edicaoSpan) { edicaoSpan = document.createElement('span'); edicaoSpan.className = 'timestamp-edicao-wrapper'; headerDiv.appendChild(edicaoSpan); } edicaoSpan.innerHTML = ` • <span class="timestamp">(editado ${formatarTempoAtras(atualizado.data_edicao)})</span>`; cancelarEdicao(comentarioId); } catch (e) { alert(`Erro: ${e.message}`); } }
 
-        // --- INÍCIO DA LÓGICA ATUALIZADA ---
+        // Funções de API (CRUD)
+        async function salvarEdicao(event, comentarioId) { event.preventDefault(); const form = event.target; const textarea = form.querySelector('textarea'); const novoConteudo = textarea.value.trim(); if (!novoConteudo) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'PATCH', headers, body: JSON.stringify({ conteudo: novoConteudo }) }); if (!res.ok) throw new Error('Falha ao salvar.'); const atualizado = await res.json(); const textoDiv = document.getElementById(`comentario-texto-${comentarioId}`); textoDiv.textContent = atualizado.conteudo; cancelarEdicao(comentarioId); } catch (e) { alert(`Erro: ${e.message}`); } }
+        async function apagarComentario(comentarioId) { if (!confirm('Tem certeza?')) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'DELETE', headers }); if (res.status === 204) { document.getElementById(`wrapper-comentario-${comentarioId}`).remove(); } else { const errData = await res.json(); throw new Error(errData.detail || 'Falha ao apagar.'); } } catch (e) { alert(`Erro: ${e.message}`); } }
+        async function enviarComentario(event) { event.preventDefault(); const form = event.target; const postId = form.dataset.postId; const postAutorId = form.dataset.postAutorId; const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return; try { const res = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers, body: JSON.stringify({ conteudo: conteudo, postagem: postId }) }); if (!res.ok) throw new Error('Falha ao enviar.'); const novo = await res.json(); document.querySelector(`#post-${postId} .comentarios-container`).insertAdjacentHTML('beforeend', criarHtmlComentario(novo, postAutorId, 0)); textarea.value = ''; } catch (e) { alert(`Erro: ${e.message}`); } }
+        async function enviarResposta(event, parentId, postAutorId) { event.preventDefault(); const form = event.target; const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return; try { const response = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers, body: JSON.stringify({ conteudo, parent: parentId }) }); if (!response.ok) throw new Error('Falha ao enviar a resposta.'); const novaResposta = await response.json(); const containerDeRespostas = document.getElementById(`respostas-de-${parentId}`); containerDeRespostas.insertAdjacentHTML('beforeend', criarHtmlComentario(novaResposta, postAutorId, 1)); textarea.value = ''; cancelarResposta(parentId); } catch (error) { alert(`Erro: ${error.message}`); } }
 
-        function prepararFormularioDeResposta(topLevelCommentId, usernameToMention) {
-            // Esconde todos os outros formulários de resposta para manter a interface limpa
-            document.querySelectorAll('.form-resposta').forEach(form => {
-                if (form.id !== `form-resposta-${topLevelCommentId}`) {
-                    form.style.display = 'none';
-                }
-            });
-
-            const form = document.getElementById(`form-resposta-${topLevelCommentId}`);
-            if (form) {
-                const textarea = form.querySelector('textarea');
-                // Se estamos respondendo a uma resposta, pré-preenchemos com @username
-                textarea.value = usernameToMention ? `@${usernameToMention} ` : '';
-                form.style.display = 'block';
-                textarea.focus();
-            }
-        }
-
-        function cancelarResposta(topLevelCommentId) {
-            const form = document.getElementById(`form-resposta-${topLevelCommentId}`);
-            if (form) {
-                form.style.display = 'none';
-                form.querySelector('textarea').value = '';
-            }
-        }
-
-        async function enviarResposta(event, parentId, postAutorId) {
-            event.preventDefault();
-            const form = event.target;
-            const textarea = form.querySelector('textarea');
-            const conteudo = textarea.value.trim();
-            if (!conteudo) return;
-
-            try {
-                // A requisição sempre envia o `parentId` do comentário de topo
-                const response = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers: headers, body: JSON.stringify({ conteudo, parent: parentId }) });
-                if (!response.ok) throw new Error('Falha ao enviar a resposta.');
-                
-                const novaResposta = await response.json();
-                const containerDeRespostas = document.getElementById(`respostas-de-${parentId}`);
-                // Adiciona a nova resposta na tela, renderizando-a como nível 1 (sem mais aninhamento)
-                containerDeRespostas.insertAdjacentHTML('beforeend', criarHtmlComentario(novaResposta, postAutorId, 1));
-                
-                textarea.value = '';
-                cancelarResposta(parentId);
-            } catch (error) { alert(`Erro: ${error.message}`); }
-        }
-
+        // Função principal para criar o HTML
         function criarHtmlComentario(comentario, postAutorId, nivel = 0) {
             let menuItensHtml = `<button class="dropdown-item" onclick="alert('Compartilhar não implementado.')"><i class="fas fa-share-square"></i> Compartilhar</button>`;
             if (usuarioLogadoId && usuarioLogadoId === comentario.autor) { menuItensHtml += `<button class="dropdown-item" onclick="mostrarFormEdicao(${comentario.id})"><i class="fas fa-pencil-alt"></i> Editar</button><button class="dropdown-item dropdown-item-vermelho" onclick="apagarComentario(${comentario.id})"><i class="fas fa-trash-alt"></i> Apagar</button>`; } 
             else if (usuarioLogadoId) { menuItensHtml += `<button class="dropdown-item dropdown-item-vermelho" onclick="alert('Denúncia não implementada.')"><i class="fas fa-flag"></i> Denunciar</button><button class="dropdown-item dropdown-item-vermelho" onclick="alert('Bloquear não implementado.')"><i class="fas fa-user-slash"></i> Bloquear</button>`; }
             
-            let edicaoHtml = ''; const dataCriacao = new Date(comentario.data_criacao); const dataEdicao = new Date(comentario.data_edicao); if ((dataEdicao - dataCriacao) / 1000 > 60) { edicaoHtml = `<span class="timestamp-edicao-wrapper"> • <span class="timestamp">(editado)</span></span>`; }
-            let seloAutorHtml = ''; if (comentario.autor === postAutorId) { seloAutorHtml = `<span class="selo-autor">Autor</span>`; }
-            
-            // Lógica do botão Responder atualizada
-            let responderHtml = '';
-            if (usuarioLogadoId) {
-                // O ID do pai de topo é o pai do comentário atual, ou o próprio ID do comentário se ele for de topo
-                const topLevelParentId = comentario.parent || comentario.id;
-                responderHtml = `<button onclick="prepararFormularioDeResposta(${topLevelParentId}, '${comentario.autor_username}')">Responder</button>`;
+            let edicaoHtml = '';
+            if (comentario.data_criacao !== comentario.data_edicao && (new Date(comentario.data_edicao) - new Date(comentario.data_criacao)) / 1000 > 60) {
+                edicaoHtml = ` <span class="timestamp">• (editado)</span>`;
             }
-
-            // Lógica recursiva para renderizar as respostas
+            let seloAutorHtml = ''; 
+            if (comentario.autor === postAutorId) { seloAutorHtml = `<span class="selo-autor">Autor</span>`; }
+            
+            let responderHtml = `<button onclick="prepararFormularioDeResposta(${comentario.parent || comentario.id}, '${comentario.autor_username}')">Responder</button>`;
+            
             let respostasHtml = '';
             if (nivel === 0 && comentario.respostas && comentario.respostas.length > 0) {
                 respostasHtml = comentario.respostas.map(resposta => criarHtmlComentario(resposta, postAutorId, nivel + 1)).join('');
             }
             
-            // O formulário de resposta só existe para comentários de topo (nível 0)
             let formRespostaHtml = '';
             if (nivel === 0) {
-                formRespostaHtml = `
-                    <div class="respostas-container">
+                formRespostaHtml = `<div class="respostas-container">
                         <form class="form-resposta" id="form-resposta-${comentario.id}" onsubmit="enviarResposta(event, ${comentario.id}, ${postAutorId})">
                             <textarea placeholder="Escreva sua resposta..." rows="2"></textarea>
                             <div class="form-resposta-botoes"><button type="button" onclick="cancelarResposta(${comentario.id})">Cancelar</button><button type="submit">Enviar</button></div>
@@ -173,31 +145,42 @@
                 </div>`;
         }
         
+        // Lógica principal que roda quando a página carrega
         document.addEventListener('DOMContentLoaded', async () => {
-            const postsContainer = document.getElementById('posts-container'); const statusMessage = document.getElementById('status-message');
-            if (!meuToken || !meuToken.includes('.')) { statusMessage.textContent = 'ERRO: Token não fornecido.'; statusMessage.style.color = 'red'; return; }
+            const postsContainer = document.getElementById('posts-container');
+            const statusMessage = document.getElementById('status-message');
+            // ... (o resto da lógica de carregar, com a verificação do token já feita no topo) ...
             try {
                 statusMessage.textContent = 'Carregando...';
                 const userResponse = await fetch('http://127.0.0.1:8000/api/auth/me/', { headers });
-                if (!userResponse.ok) throw new Error('Token inválido.');
+                if (!userResponse.ok) throw new Error('Token inválido ou expirado. Faça o login novamente.');
                 const usuario = await userResponse.json();
                 usuarioLogadoId = usuario.id;
+
                 const postsResponse = await fetch('http://127.0.0.1:8000/api/cursos/postagens/', { headers });
                 if (!postsResponse.ok) throw new Error('Não foi possível carregar as postagens.');
                 const posts = await postsResponse.json();
-                if (posts.length === 0) { statusMessage.textContent = 'Nenhuma postagem encontrada.'; } 
-                else {
-                    statusMessage.style.display = 'none'; postsContainer.innerHTML = '';
+                
+                if (posts.length === 0) {
+                    statusMessage.textContent = 'Nenhuma postagem encontrada.';
+                } else {
+                    statusMessage.style.display = 'none';
+                    postsContainer.innerHTML = '';
                     posts.forEach(post => {
                         const comentariosDeTopo = post.comentarios.filter(c => c.parent === null);
                         const comentariosHtml = comentariosDeTopo.map(comentario => criarHtmlComentario(comentario, post.autor, 0)).join('');
-                        const postElement = document.createElement('div'); postElement.id = `post-${post.id}`; postElement.classList.add('post');
+                        const postElement = document.createElement('div');
+                        postElement.id = `post-${post.id}`;
+                        postElement.classList.add('post');
                         postElement.innerHTML = `<div class="post-titulo">${post.titulo}</div><div class="post-autor"><span>por: ${post.autor_username} • <span class="timestamp">${formatarTempoAtras(post.data_criacao)}</span></span></div><div class="post-conteudo">${post.conteudo}</div><div class="comentarios-container">${comentariosHtml}</div><form class="form-comentario" data-post-id="${post.id}" data-post-autor-id="${post.autor}"><textarea placeholder="Escreva seu comentário aqui..." rows="2"></textarea><button type="submit">Enviar</button></form>`;
                         postsContainer.appendChild(postElement);
                     });
                     document.querySelectorAll('.form-comentario').forEach(form => form.addEventListener('submit', enviarComentario));
                 }
-            } catch (error) { postsContainer.innerHTML = ''; statusMessage.textContent = `Falha ao carregar o fórum. Erro: ${error.message}`; }
+            } catch (error) {
+                postsContainer.innerHTML = '';
+                statusMessage.textContent = `Falha ao carregar o fórum. Erro: ${error.message}`;
+            }
         });
     </script>
 </body>

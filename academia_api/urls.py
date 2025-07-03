@@ -12,6 +12,10 @@ urlpatterns = [
     path('api/portal-responsavel/', include('portal_responsavel.urls')),
     path('api/dashboard/', include('dashboard.urls')),
     path('api/notificacoes/', include('notificacoes.urls')),
+    path('api/recomendacoes/', include('recomendacoes.urls')),
+    path('api/biblioteca/', include('biblioteca.urls')), 
+    path('api/agendamento/', include('agendamento.urls')),    
+
 ]
 
 if settings.DEBUG:
