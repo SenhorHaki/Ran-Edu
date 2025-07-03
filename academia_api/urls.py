@@ -14,9 +14,11 @@ urlpatterns = [
     path('api/notificacoes/', include('notificacoes.urls')),
     path('api/recomendacoes/', include('recomendacoes.urls')),
     path('api/biblioteca/', include('biblioteca.urls')), 
-    path('api/agendamento/', include('agendamento.urls')),    
+    path('api/agendamento/', include('agendamento.urls')),   
+    path('api/digitacao/', include('digitacao.urls')),
 
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    

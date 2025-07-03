@@ -232,3 +232,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 
 
 
+### Listar Lições de Digitação
+GET http://127.0.0.1:8000/api/digitacao/licoes/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNDExNTgxLCJpYXQiOjE3NTE1NDc1ODEsImp0aSI6IjM4NjY0NWE0ZWJhNjRlMWU4ODY4NGIxNDFjMDI5OTQ5IiwidXNlcl9pZCI6NH0.8hv_5PoRavODQgaGoPEZtrnmX2JwKoOH3QmjOIhp7tY
+
+
+### Salvar Resultado do Game
+POST http://127.0.0.1:8000/api/digitacao/resultados/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNDExNTgxLCJpYXQiOjE3NTE1NDc1ODEsImp0aSI6IjM4NjY0NWE0ZWJhNjRlMWU4ODY4NGIxNDFjMDI5OTQ5IiwidXNlcl9pZCI6NH0.8hv_5PoRavODQgaGoPEZtrnmX2JwKoOH3QmjOIhp7tY
+
+{
+    "licao": 1,
+    "palavras_por_minuto": 50,
+    "precisao": 98.5
+}
+

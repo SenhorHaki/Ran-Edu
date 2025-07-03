@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'recomendacoes.apps.RecomendacoesConfig',
     'biblioteca.apps.BibliotecaConfig',
     'agendamento.apps.AgendamentoConfig',
+    'digitacao.apps.DigitacaoConfig',
    
 ]
 

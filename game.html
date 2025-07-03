@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game de Digitação</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .header { max-width: 900px; margin: 0 auto 20px auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header h1.logo { font-size: 1.5em; color: #0d47a1; margin: 0; }
+        .main-nav a { color: #333; text-decoration: none; font-weight: bold; font-size: 0.9em; padding: 8px 12px; border-radius: 5px; transition: background-color 0.2s; }
+        .main-nav a:hover, .main-nav a.active { background-color: #e3f2fd; color: #0d47a1; }
+        .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #0d47a1; margin-bottom: 25px; }
+        #setup-div, #game-div, #resultado-div { margin-top: 20px; }
+        #texto-para-digitar { font-family: 'Courier New', Courier, monospace; font-size: 1.5em; line-height: 1.6; background-color: #fafafa; padding: 20px; border-radius: 5px; user-select: none; }
+        .correto { color: #2e7d32; }
+        .incorreto { color: #d32f2f; background-color: #ffcdd2; }
+        .cursor { border-bottom: 3px solid #0d47a1; animation: blink 1s infinite; }
+        @keyframes blink { 50% { border-bottom-color: transparent; } }
+        .stats-bar { display: flex; justify-content: space-around; margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
+        .stat { text-align: center; }
+        .stat-label { font-size: 0.8em; color: #666; }
+        .stat-value { font-size: 1.5em; font-weight: bold; color: #333; }
+        #resultado-div { text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 class="logo">Ran-Edu</h1>
+        <nav class="main-nav">
+            <a href="home.html">Dashboard</a>
+            <a href="game.html" class="active">Game de Digitação</a>
+            <a href="#" id="logout-button">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Game de Digitação</h1>
+
+        <div id="setup-div">
+            <h2>Escolha uma Lição</h2>
+            <select id="licoes-select" style="width:100%; padding: 10px;"></select>
+            <button id="start-game-btn" style="width:100%; padding: 12px; margin-top: 10px; background-color: #1976d2; color:white; border:none; border-radius:5px; font-size:1.1em; cursor:pointer;">Iniciar Jogo</button>
+        </div>
+
+        <div id="game-div" style="display: none;">
+            <div id="texto-para-digitar"></div>
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-label">Tempo</div>
+                    <div id="timer" class="stat-value">0s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Velocidade (PPM)</div>
+                    <div id="wpm" class="stat-value">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Precisão</div>
+                    <div id="accuracy" class="stat-value">100%</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultado-div" style="display: none;">
+            <h2>Parabéns, você completou!</h2>
+            <p>Seu resultado foi salvo.</p>
+            <button id="restart-btn" style="padding: 12px 25px;">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script>
+        const meuToken = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
+        
+        // Elementos da página
+        const licoesSelect = document.getElementById('licoes-select');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const setupDiv = document.getElementById('setup-div');
+        const gameDiv = document.getElementById('game-div');
+        const resultadoDiv = document.getElementById('resultado-div');
+        const textoParaDigitarEl = document.getElementById('texto-para-digitar');
+        const timerEl = document.getElementById('timer');
+        const wpmEl = document.getElementById('wpm');
+        const accuracyEl = document.getElementById('accuracy');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Variáveis de estado do jogo
+        let textoOriginal = '';
+        let indexAtual = 0;
+        let erros = 0;
+        let startTime;
+        let timerInterval;
+
+        // Lógica Principal
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!meuToken) { window.location.href = 'login.html'; return; }
+            document.getElementById('logout-button').addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; });
+
+            // Carrega as lições no select
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/digitacao/licoes/', { headers });
+                if (!response.ok) throw new Error('Falha ao carregar lições.');
+                const licoes = await response.json();
+                licoes.forEach(licao => {
+                    const option = document.createElement('option');
+                    option.value = licao.id;
+                    option.textContent = licao.titulo;
+                    licoesSelect.appendChild(option);
+                });
+            } catch(error) { console.error(error); }
+        });
+
+        startGameBtn.addEventListener('click', async () => {
+            const licaoId = licoesSelect.value;
+            if (!licaoId) return;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/digitacao/licoes/${licaoId}/`, { headers });
+                const licao = await response.json();
+                textoOriginal = licao.texto;
+                iniciarJogo();
+            } catch (error) { console.error(error); }
+        });
+
+        function iniciarJogo() {
+            setupDiv.style.display = 'none';
+            resultadoDiv.style.display = 'none';
+            gameDiv.style.display = 'block';
+
+            indexAtual = 0;
+            erros = 0;
+            startTime = null;
+            clearInterval(timerInterval);
+            timerEl.textContent = '0s';
+            wpmEl.textContent = '0';
+            accuracyEl.textContent = '100%';
+
+            textoParaDigitarEl.innerHTML = textoOriginal.split('').map(char => `<span>${char}</span>`).join('');
+            document.querySelectorAll('#texto-para-digitar span')[0].classList.add('cursor');
+            document.addEventListener('keydown', handleKeyPress);
+        }
+
+        function handleKeyPress(e) {
+            e.preventDefault();
+            const spans = document.querySelectorAll('#texto-para-digitar span');
+            const charDigitado = e.key;
+
+            if (charDigitado.length > 1 && charDigitado !== 'Backspace') return; // Ignora teclas como Shift, Ctrl, etc.
+            if (!startTime) {
+                startTime = new Date();
+                timerInterval = setInterval(atualizarStats, 1000);
+            }
+
+            const spanAtual = spans[indexAtual];
+            const charEsperado = spanAtual.textContent;
+            
+            if (charDigitado === 'Backspace') {
+                if (indexAtual > 0) {
+                    spanAtual.classList.remove('cursor');
+                    indexAtual--;
+                    spans[indexAtual].classList.remove('correto', 'incorreto');
+                    spans[indexAtual].classList.add('cursor');
+                }
+                return;
+            }
+            
+            if (charDigitado === charEsperado) {
+                spanAtual.classList.add('correto');
+            } else {
+                spanAtual.classList.add('incorreto');
+                erros++;
+            }
+            
+            spanAtual.classList.remove('cursor');
+            indexAtual++;
+            
+            if (indexAtual < spans.length) {
+                spans[indexAtual].classList.add('cursor');
+            } else {
+                finalizarJogo();
+            }
+        }
+        
+        function atualizarStats() {
+            const tempoDecorrido = Math.floor((new Date() - startTime) / 1000);
+            timerEl.textContent = `${tempoDecorrido}s`;
+
+            const palavrasDigitadas = (indexAtual / 5); // Padrão: uma "palavra" tem 5 caracteres
+            const minutos = tempoDecorrido / 60;
+            const wpm = minutos > 0 ? Math.round(palavrasDigitadas / minutos) : 0;
+            wpmEl.textContent = wpm;
+
+            const precisao = indexAtual > 0 ? Math.max(0, ((indexAtual - erros) / indexAtual) * 100) : 100;
+            accuracyEl.textContent = `${precisao.toFixed(1)}%`;
+        }
+
+        async function finalizarJogo() {
+            document.removeEventListener('keydown', handleKeyPress);
+            clearInterval(timerInterval);
+            atualizarStats(); // Final update
+
+            const wpmFinal = parseInt(wpmEl.textContent);
+            const precisaoFinal = parseFloat(accuracyEl.textContent);
+
+            // Salva o resultado
+            try {
+                await fetch('http://127.0.0.1:8000/api/digitacao/resultados/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', ...headers},
+                    body: JSON.stringify({
+                        licao: licoesSelect.value,
+                        palavras_por_minuto: wpmFinal,
+                        precisao: precisaoFinal
+                    })
+                });
+            } catch(error) { console.error('Falha ao salvar resultado:', error); }
+
+            gameDiv.style.display = 'none';
+            resultadoDiv.style.display = 'block';
+        }
+
+        restartBtn.addEventListener('click', () => {
+            setupDiv.style.display = 'block';
+            resultadoDiv.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
