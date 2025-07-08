@@ -14,7 +14,12 @@
         .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         h1 { color: #0d47a1; margin-bottom: 25px; }
         #setup-div, #game-div, #resultado-div { margin-top: 20px; }
-        #texto-para-digitar { font-family: 'Courier New', Courier, monospace; font-size: 1.5em; line-height: 1.6; background-color: #fafafa; padding: 20px; border-radius: 5px; user-select: none; }
+        .dificuldade-botoes { display: flex; justify-content: center; gap: 15px; }
+        .btn-dificuldade { width:150px; padding: 15px; font-size:1.1em; cursor:pointer; border: 2px solid; border-radius: 8px; background-color: white; font-weight: bold; }
+        .btn-facil { color: #2e7d32; border-color: #2e7d32; }
+        .btn-medio { color: #f57c00; border-color: #f57c00; }
+        .btn-dificil { color: #d32f2f; border-color: #d32f2f; }
+        #texto-para-digitar { font-family: 'Courier New', Courier, monospace; font-size: 1.5em; line-height: 1.6; background-color: #fafafa; padding: 20px; border-radius: 5px; user-select: none; margin-bottom: 15px; }
         .correto { color: #2e7d32; }
         .incorreto { color: #d32f2f; background-color: #ffcdd2; }
         .cursor { border-bottom: 3px solid #0d47a1; animation: blink 1s infinite; }
@@ -24,6 +29,13 @@
         .stat-label { font-size: 0.8em; color: #666; }
         .stat-value { font-size: 1.5em; font-weight: bold; color: #333; }
         #resultado-div { text-align: center; }
+        .game-actions { text-align: center; }
+        #leaderboard-container { margin-top: 30px; }
+        #leaderboard-tabela { width: 80%; margin: 10px auto; border-collapse: collapse; }
+        #leaderboard-tabela th, #leaderboard-tabela td { padding: 8px; border-bottom: 1px solid #eee; }
+        #leaderboard-tabela th { font-weight: bold; text-align: left; }
+        #leaderboard-tabela .rank { font-weight: bold; width: 40px; }
+
     </style>
 </head>
 <body>
@@ -40,33 +52,36 @@
         <h1>Game de Digitação</h1>
 
         <div id="setup-div">
-            <h2>Escolha uma Lição</h2>
-            <select id="licoes-select" style="width:100%; padding: 10px;"></select>
-            <button id="start-game-btn" style="width:100%; padding: 12px; margin-top: 10px; background-color: #1976d2; color:white; border:none; border-radius:5px; font-size:1.1em; cursor:pointer;">Iniciar Jogo</button>
+            <h2>Escolha um Nível de Dificuldade</h2>
+            <div class="dificuldade-botoes">
+                <button class="btn-dificuldade btn-facil" data-dificuldade="FACIL">Fácil</button>
+                <button class="btn-dificuldade btn-medio" data-dificuldade="MEDIO">Médio (2xF)</button>
+                <button class="btn-dificuldade btn-dificil" data-dificuldade="DIFICIL">Difícil(4xM)</button>
+            </div>
         </div>
 
         <div id="game-div" style="display: none;">
             <div id="texto-para-digitar"></div>
+            <div class="game-actions">
+                <button id="restart-lesson-btn" style="padding: 8px 20px;">Reiniciar Frase</button>
+            </div>
             <div class="stats-bar">
-                <div class="stat">
-                    <div class="stat-label">Tempo</div>
-                    <div id="timer" class="stat-value">0s</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Velocidade (PPM)</div>
-                    <div id="wpm" class="stat-value">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Precisão</div>
-                    <div id="accuracy" class="stat-value">100%</div>
-                </div>
+                <div class="stat"><div class="stat-label">Tempo</div><div id="timer" class="stat-value">0s</div></div>
+                <div class="stat"><div class="stat-label">Velocidade (PPM)</div><div id="wpm" class="stat-value">0</div></div>
+                <div class="stat"><div class="stat-label">Precisão</div><div id="accuracy" class="stat-value">100%</div></div>
             </div>
         </div>
 
         <div id="resultado-div" style="display: none;">
             <h2>Parabéns, você completou!</h2>
             <p>Seu resultado foi salvo.</p>
-            <button id="restart-btn" style="padding: 12px 25px;">Jogar Novamente</button>
+
+                <div id="leaderboard-container">
+                    <h3>Placar de Líderes</h3>
+                    <table id="leaderboard-tabela"></table>
+                </div>
+
+            <button id="play-again-btn" style="padding: 12px 25px;">Jogar Novamente</button>
         </div>
     </div>
 
@@ -74,9 +89,6 @@
         const meuToken = localStorage.getItem('accessToken');
         const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
         
-        // Elementos da página
-        const licoesSelect = document.getElementById('licoes-select');
-        const startGameBtn = document.getElementById('start-game-btn');
         const setupDiv = document.getElementById('setup-div');
         const gameDiv = document.getElementById('game-div');
         const resultadoDiv = document.getElementById('resultado-div');
@@ -84,44 +96,40 @@
         const timerEl = document.getElementById('timer');
         const wpmEl = document.getElementById('wpm');
         const accuracyEl = document.getElementById('accuracy');
-        const restartBtn = document.getElementById('restart-btn');
+        const restartLessonBtn = document.getElementById('restart-lesson-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
 
-        // Variáveis de estado do jogo
-        let textoOriginal = '';
-        let indexAtual = 0;
-        let erros = 0;
-        let startTime;
-        let timerInterval;
+        let licoesAgrupadas = { FACIL: [], MEDIO: [], DIFICIL: [] };
+        let licaoAtual;
+        let indexAtual = 0, erros = 0, startTime, timerInterval;
 
-        // Lógica Principal
         document.addEventListener('DOMContentLoaded', async () => {
             if (!meuToken) { window.location.href = 'login.html'; return; }
             document.getElementById('logout-button').addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; });
 
-            // Carrega as lições no select
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/digitacao/licoes/', { headers });
                 if (!response.ok) throw new Error('Falha ao carregar lições.');
                 const licoes = await response.json();
                 licoes.forEach(licao => {
-                    const option = document.createElement('option');
-                    option.value = licao.id;
-                    option.textContent = licao.titulo;
-                    licoesSelect.appendChild(option);
+                    if (licoesAgrupadas[licao.dificuldade]) {
+                        licoesAgrupadas[licao.dificuldade].push(licao);
+                    }
                 });
             } catch(error) { console.error(error); }
         });
 
-        startGameBtn.addEventListener('click', async () => {
-            const licaoId = licoesSelect.value;
-            if (!licaoId) return;
-
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/api/digitacao/licoes/${licaoId}/`, { headers });
-                const licao = await response.json();
-                textoOriginal = licao.texto;
-                iniciarJogo();
-            } catch (error) { console.error(error); }
+        document.querySelectorAll('.btn-dificuldade').forEach(button => {
+            button.addEventListener('click', () => {
+                const dificuldade = button.dataset.dificuldade;
+                const licoesDoNivel = licoesAgrupadas[dificuldade];
+                if (licoesDoNivel && licoesDoNivel.length > 0) {
+                    licaoAtual = licoesDoNivel[Math.floor(Math.random() * licoesDoNivel.length)];
+                    iniciarJogo();
+                } else {
+                    alert(`Nenhuma lição encontrada para o nível ${dificuldade}.`);
+                }
+            });
         });
 
         function iniciarJogo() {
@@ -137,28 +145,20 @@
             wpmEl.textContent = '0';
             accuracyEl.textContent = '100%';
 
-            textoParaDigitarEl.innerHTML = textoOriginal.split('').map(char => `<span>${char}</span>`).join('');
+            textoParaDigitarEl.innerHTML = licaoAtual.texto.split('').map(char => `<span>${char}</span>`).join('');
             document.querySelectorAll('#texto-para-digitar span')[0].classList.add('cursor');
             document.addEventListener('keydown', handleKeyPress);
         }
 
         function handleKeyPress(e) {
             e.preventDefault();
+            if (e.key.length > 1 && e.key !== 'Backspace') return;
+            if (!startTime) { startTime = new Date(); timerInterval = setInterval(atualizarStats, 1000); }
+
             const spans = document.querySelectorAll('#texto-para-digitar span');
-            const charDigitado = e.key;
-
-            if (charDigitado.length > 1 && charDigitado !== 'Backspace') return; // Ignora teclas como Shift, Ctrl, etc.
-            if (!startTime) {
-                startTime = new Date();
-                timerInterval = setInterval(atualizarStats, 1000);
-            }
-
-            const spanAtual = spans[indexAtual];
-            const charEsperado = spanAtual.textContent;
-            
-            if (charDigitado === 'Backspace') {
+            if (e.key === 'Backspace') {
                 if (indexAtual > 0) {
-                    spanAtual.classList.remove('cursor');
+                    spans[indexAtual]?.classList.remove('cursor');
                     indexAtual--;
                     spans[indexAtual].classList.remove('correto', 'incorreto');
                     spans[indexAtual].classList.add('cursor');
@@ -166,7 +166,8 @@
                 return;
             }
             
-            if (charDigitado === charEsperado) {
+            const spanAtual = spans[indexAtual];
+            if (e.key === spanAtual.textContent) {
                 spanAtual.classList.add('correto');
             } else {
                 spanAtual.classList.add('incorreto');
@@ -186,42 +187,63 @@
         function atualizarStats() {
             const tempoDecorrido = Math.floor((new Date() - startTime) / 1000);
             timerEl.textContent = `${tempoDecorrido}s`;
-
-            const palavrasDigitadas = (indexAtual / 5); // Padrão: uma "palavra" tem 5 caracteres
+            const palavrasDigitadas = (indexAtual / 5);
             const minutos = tempoDecorrido / 60;
             const wpm = minutos > 0 ? Math.round(palavrasDigitadas / minutos) : 0;
             wpmEl.textContent = wpm;
-
             const precisao = indexAtual > 0 ? Math.max(0, ((indexAtual - erros) / indexAtual) * 100) : 100;
             accuracyEl.textContent = `${precisao.toFixed(1)}%`;
         }
 
-        async function finalizarJogo() {
-            document.removeEventListener('keydown', handleKeyPress);
+
+
+
+        
+
+        async function finalizarJogo() {document.removeEventListener('keydown', handleKeyPress);
             clearInterval(timerInterval);
-            atualizarStats(); // Final update
+            atualizarStats();
 
             const wpmFinal = parseInt(wpmEl.textContent);
             const precisaoFinal = parseFloat(accuracyEl.textContent);
 
-            // Salva o resultado
             try {
+                // Salva o resultado do jogador
                 await fetch('http://127.0.0.1:8000/api/digitacao/resultados/', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json', ...headers},
+                    headers: headers,
                     body: JSON.stringify({
-                        licao: licoesSelect.value,
+                        licao: licaoAtual.id,
                         palavras_por_minuto: wpmFinal,
                         precisao: precisaoFinal
                     })
                 });
-            } catch(error) { console.error('Falha ao salvar resultado:', error); }
+
+                const leaderboardResponse = await fetch(`http://127.0.0.1:8000/api/digitacao/licoes/${licaoAtual.id}/leaderboard/`, { headers });
+                const leaderboardData = await leaderboardResponse.json();
+                const tabela = document.getElementById('leaderboard-tabela');
+                tabela.innerHTML = '<thead><tr><th>#</th><th>Jogador</th><th>PPM</th><th>Precisão</th></tr></thead><tbody></tbody>';
+                const corpoTabela = tabela.querySelector('tbody');
+                leaderboardData.forEach((resultado, index) => {
+                    corpoTabela.innerHTML += `
+                        <tr>
+                            <td class="rank">${index + 1}</td>
+                            <td>${resultado.aluno_username}</td>
+                            <td>${resultado.palavras_por_minuto}</td>
+                            <td>${resultado.precisao.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                });
+
+            } catch(error) { console.error('Falha ao salvar ou buscar resultados:', error); }
 
             gameDiv.style.display = 'none';
             resultadoDiv.style.display = 'block';
+
         }
 
-        restartBtn.addEventListener('click', () => {
+        restartLessonBtn.addEventListener('click', iniciarJogo);
+        playAgainBtn.addEventListener('click', () => {
             setupDiv.style.display = 'block';
             resultadoDiv.style.display = 'none';
         });

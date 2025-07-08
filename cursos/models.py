@@ -1,53 +1,49 @@
+import uuid
 from django.db import models
 from django.conf import settings
-import uuid
+from usuarios.models import Usuario
 
 class Curso(models.Model):
     titulo = models.CharField(max_length=200)
-    descricao = models.TextField(blank=True, null=True)
-    carga_horaria = models.IntegerField()
-    alunos = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Inscricao', related_name='cursos_inscritos', blank=True)
-    def __str__(self): return self.titulo
+    descricao = models.TextField(blank=True)
+    carga_horaria = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.titulo
+
+class Turma(models.Model):
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='turmas')
+    nome = models.CharField(max_length=100, help_text="Ex: 'Turma 2025.1'")
+    alunos = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='turmas_inscritas', blank=True)
+
+    def __str__(self):
+        return f"{self.nome} - {self.curso.titulo}"
 
 class Modulo(models.Model):
-    curso = models.ForeignKey(Curso, related_name='modulos', on_delete=models.CASCADE)
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='modulos')
     titulo = models.CharField(max_length=200)
     ordem = models.PositiveIntegerField()
-    class Meta: ordering = ['ordem']
-    def __str__(self): return f"{self.curso.titulo} - Módulo {self.ordem}: {self.titulo}"
+
+    def __str__(self):
+        return f"{self.titulo} (Curso: {self.curso.titulo})"
 
 class Aula(models.Model):
-    modulo = models.ForeignKey(Modulo, related_name='aulas', on_delete=models.CASCADE)
+    modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE, related_name='aulas')
     titulo = models.CharField(max_length=200)
     ordem = models.PositiveIntegerField()
-    video_url = models.URLField(max_length=200, blank=True, null=True)
-    class Meta: ordering = ['ordem']
-    def __str__(self): return f"Aula {self.ordem}: {self.titulo}"
+    video_url = models.URLField(blank=True, null=True)
 
-class Inscricao(models.Model):
-    aluno = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    data_inscricao = models.DateTimeField(auto_now_add=True)
-    progresso = models.IntegerField(default=0)
-    class Meta: unique_together = [['aluno', 'curso']]
-    def __str__(self): return f"{self.aluno.username} inscrito em {self.curso.titulo}"
-
-class AulaConcluida(models.Model):
-    aluno = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
-    data_conclusao = models.DateTimeField(auto_now_add=True)
-    class Meta: unique_together = [['aluno', 'aula']]
-    def __str__(self): return f"{self.aluno.username} concluiu {self.aula.titulo}"
+    def __str__(self):
+        return self.titulo
 
 class Postagem(models.Model):
-    """
-    Representa um tópico de discussão (post) criado por um usuário dentro de um curso.
-    """
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='postagens')
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='postagens', null=True, blank=True)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='postagens', null=True, blank=True)
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
     conteudo = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
+    data_edicao = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.titulo
@@ -62,16 +58,29 @@ class Comentario(models.Model):
 
     def __str__(self):
         return f'Comentário de {self.autor.username} em "{self.postagem.titulo}"'
-    
-# Em cursos/models.py, no final do arquivo
+
+class Inscricao(models.Model):
+    aluno = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    data_inscricao = models.DateTimeField(auto_now_add=True)
+    progresso = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.aluno.username} inscrito em {self.curso.titulo}"
+
+class AulaConcluida(models.Model):
+    aluno = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
+    data_conclusao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [['aluno', 'aula']]
 
 class Certificado(models.Model):
-    """
-    Registra um certificado emitido para uma inscrição concluída.
-    """
     inscricao = models.OneToOneField(Inscricao, on_delete=models.CASCADE, related_name='certificado')
     data_emissao = models.DateTimeField(auto_now_add=True)
     codigo_validacao = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return f"Certificado para {self.inscricao.aluno} no curso {self.inscricao.curso}"
+    

@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Boletim</title>
+    <title>Biblioteca de Recursos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Estilos da página, incluindo o novo header */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
         .header { max-width: 900px; margin: 0 auto 20px auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .header h1.logo { font-size: 1.5em; color: #0d47a1; margin: 0; }
         .main-nav a { color: #333; text-decoration: none; font-weight: bold; font-size: 0.9em; padding: 8px 12px; border-radius: 5px; transition: background-color 0.2s; }
         .main-nav a:hover, .main-nav a.active { background-color: #e3f2fd; color: #0d47a1; }
-        .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1.page-title { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; }
-        .boletim-tabela { width: 100%; border-collapse: collapse; }
-        .boletim-tabela th, .boletim-tabela td { border-bottom: 1px solid #ddd; padding: 12px 15px; text-align: left; }
-        .boletim-tabela th { background-color: #f8f9fa; color: #333; font-size: 0.9em; text-transform: uppercase; }
-        .boletim-tabela td { font-size: 1em; }
-        .nota-final { font-weight: bold; color: #0d47a1; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        h1.page-title, h2 { color: #0d47a1; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; margin-top: 0; }
+        .recurso-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; }
+        .recurso-item:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
+        .recurso-icone { font-size: 1.8em; color: #555; width: 30px; text-align: center; }
+        .recurso-info p { margin: 0; }
+        .recurso-titulo { font-weight: bold; }
+        .recurso-autor { font-size: 0.8em; color: #777; }
+        .recurso-download { margin-left: auto; }
+        .recurso-download a { text-decoration: none; color: #0d47a1; font-weight: bold; font-size: 0.9em; }
         #status-message { text-align: center; font-size: 1.1em; color: #888; padding: 40px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .form-actions { grid-column: 1 / -1; text-align: right; }
+        .btn-submit { background-color: #1976d2; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -27,81 +37,108 @@
         <nav class="main-nav">
             <a href="home.html">Dashboard</a>
             <a href="forum.html">Fórum</a>
-            <a href="boletim.html" class="active">Boletim</a>
+            <a href="biblioteca.html" class="active">Biblioteca</a>
             <a href="#" id="logout-button">Sair</a>
         </nav>
     </header>
 
     <div class="container">
-        <h1 class="page-title">Meu Boletim</h1>
-        <table class="boletim-tabela">
-            <thead>
-                <tr>
-                    <th>Avaliação</th>
-                    <th>Curso</th>
-                    <th>Nota</th>
-                    <th>Data de Lançamento</th>
-                </tr>
-            </thead>
-            <tbody id="boletim-corpo">
-                </tbody>
-        </table>
+        <div class="card">
+            <h2>Enviar Novo Recurso</h2>
+            <form id="upload-form">
+                <div class="input-group">
+                    <label for="titulo">Título do Recurso</label>
+                    <input type="text" id="titulo" name="titulo" required>
+                </div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="curso">Associar ao Curso (Opcional)</label>
+                        <select id="curso" name="curso"><option value="">Nenhum</option></select>
+                    </div>
+                    <div class="input-group">
+                        <label for="arquivo">Arquivo</label>
+                        <input type="file" id="arquivo" name="arquivo" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Enviar Recurso</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Recursos Disponíveis</h2>
+            <div id="recursos-container">
+                <p id="status-message">Carregando recursos...</p>
+            </div>
+        </div>
     </div>
 
     <script>
         const meuToken = localStorage.getItem('accessToken');
-        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
-
-        function formatarData(dataString) {
-            const opcoes = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dataString).toLocaleDateString('pt-BR', opcoes);
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                });
-            }
-
-            if (!meuToken) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            const corpoTabela = document.getElementById('boletim-corpo');
-            corpoTabela.innerHTML = '<tr><td colspan="4" id="status-message">Carregando notas...</td></tr>';
-
+        const authHeaders = { 'Authorization': `Bearer ${meuToken}` };
+        
+        async function carregarRecursos() {
+            const recursosContainer = document.getElementById('recursos-container');
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/avaliacoes/meu-boletim/', { headers });
-                if (!response.ok) {
-                    throw new Error('Falha ao buscar o boletim. Faça o login novamente.');
-                }
-                const notas = await response.json();
-
-                corpoTabela.innerHTML = ''; 
-
-                if (notas.length === 0) {
-                    corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhuma nota lançada para você ainda.</td></tr>';
+                const response = await fetch('http://127.0.0.1:8000/api/biblioteca/recursos/', { headers: authHeaders });
+                if (response.status === 403) { throw new Error('Apenas professores podem ver esta página.'); }
+                if (!response.ok) { throw new Error('Falha ao buscar os recursos.'); }
+                
+                const recursos = await response.json();
+                recursosContainer.innerHTML = ''; 
+                if (recursos.length === 0) {
+                    recursosContainer.innerHTML = '<p id="status-message">Nenhum recurso na biblioteca ainda.</p>';
                 } else {
-                    notas.forEach(nota => {
-                        const linha = document.createElement('tr');
-                        // MUDANÇA AQUI para exibir o título do curso
-                        linha.innerHTML = `
-                            <td>${nota.avaliacao.titulo}</td>
-                            <td>${nota.avaliacao.curso_titulo || nota.avaliacao.curso}</td>
-                            <td class="nota-final">${parseFloat(nota.valor).toFixed(2)}</td>
-                            <td>${formatarData(nota.data_lancamento)}</td>
+                    recursos.forEach(recurso => {
+                        const item = document.createElement('div');
+                        item.classList.add('recurso-item');
+                        item.innerHTML = `
+                            <div class="recurso-icone"><i class="fas fa-file-alt"></i></div>
+                            <div class="recurso-info">
+                                <p class="recurso-titulo">${recurso.titulo}</p>
+                                <p class="recurso-autor">Enviado por: ${recurso.autor_username}</p>
+                            </div>
+                            <div class="recurso-download"><a href="${recurso.arquivo}" target="_blank">Baixar</a></div>
                         `;
-                        corpoTabela.appendChild(linha);
+                        recursosContainer.appendChild(item);
                     });
                 }
             } catch (error) {
-                corpoTabela.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Erro: ${error.message}</td></tr>`;
+                recursosContainer.innerHTML = `<p id="status-message" style="color: red;">${error.message}</p>`;
+                document.getElementById('upload-form').style.display = 'none';
             }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) { logoutButton.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; }); }
+            if (!meuToken) { window.location.href = 'login.html'; return; }
+            
+            await carregarRecursos();
+            
+            const uploadForm = document.getElementById('upload-form');
+            uploadForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                const formData = new FormData();
+                formData.append('titulo', event.target.titulo.value);
+                formData.append('arquivo', event.target.arquivo.files[0]);
+                const cursoId = event.target.curso.value;
+                if(cursoId) { formData.append('curso', cursoId); }
+
+                try {
+                    const response = await fetch('http://127.0.0.1:8000/api/biblioteca/recursos/', {
+                        method: 'POST',
+                        headers: authHeaders,
+                        body: formData     
+                    });
+                    if (!response.ok) { throw new Error('Falha no upload do recurso.'); }
+                    
+                    uploadForm.reset();
+                    await carregarRecursos();
+                } catch (error) { alert(`Erro: ${error.message}`); }
+            });
         });
     </script>
 </body>

@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Certificado, Curso, Modulo, Aula, Inscricao, AulaConcluida, Postagem, Comentario
 from .serializers import CursoSerializer, ModuloSerializer, AulaSerializer, InscricaoSerializer, PostagemSerializer, ComentarioSerializer
-from .permissions import IsOwnerOrReadOnly, IsEnrolled
+from .permissions import IsOwnerOrReadOnly, IsEnrolled, CanPostInForum
 from gamificacao.models import Conquista, ConquistaDoAluno
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -95,22 +95,24 @@ class MinhasInscricoesView(generics.ListAPIView):
     def get_queryset(self): return Inscricao.objects.filter(aluno=self.request.user)
 
 class PostagemViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint para as postagens do fórum.
-    """
-    queryset = Postagem.objects.select_related('autor', 'curso').annotate(
-        num_comentarios=Count('comentarios', distinct=True)
-    ).prefetch_related('comentarios__autor')
-    
     serializer_class = PostagemSerializer
+    permission_classes = [permissions.IsAuthenticated] # Vamos refinar as permissões depois
 
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    def get_queryset(self):
+        user = self.request.user
 
-    filterset_fields = ['curso']
+        cursos_inscritos_ids = Inscricao.objects.filter(aluno=user).values_list('curso_id', flat=True)
+        turmas_membro_ids = user.turmas_inscritas.all().values_list('id', flat=True)
 
-    search_fields = ['titulo', 'conteudo']
+        queryset = Postagem.objects.filter(
+            Q(curso__isnull=True, turma__isnull=True) |
+            Q(curso_id__in=cursos_inscritos_ids) |
+            Q(turma_id__in=turmas_membro_ids)
+        ).select_related('autor', 'curso', 'turma').annotate(
+            num_comentarios=Count('comentarios', distinct=True)
+        ).distinct()
 
-    permission_classes = [permissions.IsAuthenticated, IsEnrolled]
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(autor=self.request.user)

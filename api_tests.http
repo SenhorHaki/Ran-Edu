@@ -222,8 +222,8 @@ POST http://127.0.0.1:8000/api/auth/token/
 Content-Type: application/json
 
 {
-    "username": "aluno_gamer",
-    "password": "1234"
+    "username": "prof_silva",
+    "password": "Amodanova3.0"
 }
 
 ### Listar Recursos da Biblioteca
@@ -247,4 +247,61 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
     "palavras_por_minuto": 50,
     "precisao": 98.5
 }
+
+
+### Listar Recursos da Biblioteca
+GET http://127.0.0.1:8000/api/biblioteca/recursos/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNzczMzIyLCJpYXQiOjE3NTE5MDkzMjIsImp0aSI6IjhkMzY3NTE2MTk1NjQ4MzE5NmYxYTRmMmIxMDQ5MjkyIiwidXNlcl9pZCI6MTJ9.R4Ke4WqPghEGojlWsNi9iTDHPMvLSC9Y3tLkXd4woA4
+
+
+
+### Login como Aluno
+POST http://127.0.0.1:8000/api/auth/token/
+Content-Type: application/json
+
+{
+    "username": "aluno_novo",
+    "password": "1234"
+}
+
+
+
+### Criar Post da Escola
+POST http://127.0.0.1:8000/api/cursos/postagens/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyODY0MTk4LCJpYXQiOjE3NTIwMDAxOTgsImp0aSI6IjI4YTY2OTdiMGQ3ZjQ0M2RiNmZiZjNiYzg4NTcxYTMwIiwidXNlcl9pZCI6MX0.7GxT5UAqrklJfnHOZRh5MlUgen5HUlzw4hFyQqTc3pY
+
+{
+    "titulo": "Post Geral da Escola",
+    "conteudo": "Este post deve ser visível para todos."
+}
+
+### Criar Post do Curso 5
+POST http://127.0.0.1:8000/api/cursos/postagens/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyODY0MTk4LCJpYXQiOjE3NTIwMDAxOTgsImp0aSI6IjI4YTY2OTdiMGQ3ZjQ0M2RiNmZiZjNiYzg4NTcxYTMwIiwidXNlcl9pZCI6MX0.7GxT5UAqrklJfnHOZRh5MlUgen5HUlzw4hFyQqTc3pY
+
+{
+    "titulo": "Post do Curso de Inatividade",
+    "conteudo": "Apenas para alunos inscritos neste curso.",
+    "curso": 5
+}
+
+
+### Criar Post da Turma 1
+POST http://127.0.0.1:8000/api/cursos/postagens/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyODY0MTk4LCJpYXQiOjE3NTIwMDAxOTgsImp0aSI6IjI4YTY2OTdiMGQ3ZjQ0M2RiNmZiZjNiYzg4NTcxYTMwIiwidXNlcl9pZCI6MX0.7GxT5UAqrklJfnHOZRh5MlUgen5HUlzw4hFyQqTc3pY
+
+
+{
+    "titulo": "Post da Turma de Teste 2025",
+    "conteudo": "Apenas para membros desta turma específica.",
+    "turma": 1
+}
+
+
+### Listar Postagens (como aluno_lento)
+GET http://127.0.0.1:8000/api/cursos/postagens/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyODY0OTQzLCJpYXQiOjE3NTIwMDA5NDMsImp0aSI6ImRjNWMyZDU1OTZkZDRiOGE5MjE2YzVmN2I2OTk3M2JjIiwidXNlcl9pZCI6MTN9.XHalVRriTHJC86ROwXRHPuE1Yy6FpeZwswfPF0rAr7I
 

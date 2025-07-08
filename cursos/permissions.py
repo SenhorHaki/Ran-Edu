@@ -16,6 +16,31 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # se o usuário da requisição for o mesmo que o autor do objeto.
         return obj.autor == request.user
 
+class CanPostInForum(permissions.BasePermission):
+    """
+    Permissão para verificar se um usuário pode postar em um determinado fórum.
+    """
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if request.method == 'POST':
+            user = request.user
+            data = request.data
+            curso_id = data.get('curso')
+            turma_id = data.get('turma')
+
+            if not curso_id and not turma_id:
+                return True
+            
+            if turma_id:
+                return user.turmas_inscritas.filter(id=turma_id).exists()
+            
+            if curso_id:
+                return Inscricao.objects.filter(aluno=user, curso_id=curso_id).exists()
+
+        return True
+
 class IsEnrolled(permissions.BasePermission):
     """
     Permissão que verifica se o usuário está inscrito no curso

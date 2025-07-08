@@ -3,7 +3,9 @@ from .models import LicaoDigitacao, ResultadoDigitacao
 
 @admin.register(LicaoDigitacao)
 class LicaoDigitacaoAdmin(admin.ModelAdmin):
-    list_display = ('titulo',)
+    list_display = ('titulo', 'dificuldade')
+    list_filter = ('dificuldade',)
+    
     search_fields = ('titulo', 'texto')
 
 @admin.register(ResultadoDigitacao)
