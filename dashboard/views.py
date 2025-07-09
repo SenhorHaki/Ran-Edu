@@ -1,42 +1,33 @@
-# Em dashboard/views.py
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
+from django.views import View
+
 from cursos.models import Inscricao
+
 from gamificacao.models import ConquistaDoAluno
+
 from notificacoes.models import Notificacao
+
 from .serializers import DashboardSerializer
 
-class DashboardView(APIView):
-    """
-    View que agrega múltiplos dados para o dashboard do usuário logado.
-    """
-    permission_classes = [IsAuthenticated]
+class DashboardView(LoginRequiredMixin, View):
+    login_url = '/admin/login/' 
 
     def get(self, request, *args, **kwargs):
         usuario = request.user
 
-        # 1. Busca cursos em andamento
         cursos = Inscricao.objects.filter(aluno=usuario).select_related('curso')
-
-        # 2. Busca as 5 últimas conquistas
         conquistas = ConquistaDoAluno.objects.filter(aluno=usuario).select_related('conquista').order_by('-data_obtencao')[:5]
-        
-        # 3. Conta notificações não lidas
         notificacoes_count = Notificacao.objects.filter(destinatario=usuario, lida=False).count()
 
-        # Monta o objeto de dados para o serializer
-        dashboard_data = {
-            'username': usuario.username,
+        contexto = {
             'cursos_em_andamento': cursos,
             'ultimas_conquistas': conquistas,
-            'notificacoes_nao_lidas': notificacoes_count
+            'notificacoes_nao_lidas': notificacoes_count,
         }
 
-        # Serializa os dados agregados
-        serializer = DashboardSerializer(instance=dashboard_data)
-
-        return Response(serializer.data)
-
+        return render(request, 'dashboard/home.html', contexto)

@@ -1,16 +1,23 @@
-from django.db.models import Count, Q
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Certificado, Curso, Modulo, Aula, Inscricao, AulaConcluida, Postagem, Comentario
+from rest_framework.views import APIView 
+
+from django_filters.rest_framework import DjangoFilterBackend
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from django.db.models import Count, Q
+from django.shortcuts import render
+from django.views import View
+
+from .models import Certificado, Curso, Modulo, Aula, Inscricao, AulaConcluida, Postagem, Comentario, Turma 
 from .serializers import CursoSerializer, ModuloSerializer, AulaSerializer, InscricaoSerializer, PostagemSerializer, ComentarioSerializer
 from .permissions import IsOwnerOrReadOnly, IsEnrolled, CanPostInForum
 from gamificacao.models import Conquista, ConquistaDoAluno
-from django.http import HttpResponse
-from django.template.loader import render_to_string
+
 from weasyprint import HTML
+
 
 class CursoViewSet(viewsets.ModelViewSet):
     queryset = Curso.objects.annotate(
@@ -37,7 +44,6 @@ class AulaViewSet(viewsets.ModelViewSet):
         aula = self.get_object()
         aluno = request.user
 
-        # Lógica para verificar inscrição
         curso_da_aula = aula.modulo.curso
         try:
             inscricao = Inscricao.objects.get(aluno=aluno, curso=curso_da_aula)
@@ -47,10 +53,8 @@ class AulaViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # Lógica para marcar aula como concluída
         AulaConcluida.objects.get_or_create(aluno=aluno, aula=aula)
         
-        # Lógica para recalcular progresso
         total_aulas_curso = Aula.objects.filter(modulo__curso=curso_da_aula).count()
         aulas_concluidas_pelo_aluno = AulaConcluida.objects.filter(
             aluno=aluno, aula__modulo__curso=curso_da_aula
@@ -62,11 +66,6 @@ class AulaViewSet(viewsets.ModelViewSet):
         inscricao.progresso = progresso
         inscricao.save()
 
-        # --- LÓGICA DE RECOMPENSAS (Gamificação e Certificado) ---
-        
-        mensagem_bonus = {} # Dicionário para guardar mensagens especiais
-
-        # Lógica de Gamificação (que você já tinha)
         total_aulas_concluidas_geral = AulaConcluida.objects.filter(aluno=aluno).count()
         if total_aulas_concluidas_geral == 1:
             try:
@@ -96,23 +95,26 @@ class MinhasInscricoesView(generics.ListAPIView):
 
 class PostagemViewSet(viewsets.ModelViewSet):
     serializer_class = PostagemSerializer
-    permission_classes = [permissions.IsAuthenticated] # Vamos refinar as permissões depois
+    permission_classes = [permissions.IsAuthenticated] 
 
     def get_queryset(self):
-        user = self.request.user
-
-        cursos_inscritos_ids = Inscricao.objects.filter(aluno=user).values_list('curso_id', flat=True)
-        turmas_membro_ids = user.turmas_inscritas.all().values_list('id', flat=True)
-
-        queryset = Postagem.objects.filter(
-            Q(curso__isnull=True, turma__isnull=True) |
-            Q(curso_id__in=cursos_inscritos_ids) |
-            Q(turma_id__in=turmas_membro_ids)
-        ).select_related('autor', 'curso', 'turma').annotate(
+        queryset = Postagem.objects.select_related('autor', 'curso', 'turma').annotate(
             num_comentarios=Count('comentarios', distinct=True)
-        ).distinct()
+        )
+        curso_id = self.request.query_params.get('curso')
+        turma_id = self.request.query_params.get('turma')
+        escola = self.request.query_params.get('escola')
 
-        return queryset
+        if escola:
+            return queryset.filter(curso__isnull=True, turma__isnull=True)
+        
+        if turma_id:
+            return queryset.filter(turma_id=turma_id)
+        
+        if curso_id:
+            return queryset.filter(curso_id=curso_id)
+
+        return queryset.none()
 
     def perform_create(self, serializer):
         serializer.save(autor=self.request.user)
@@ -140,23 +142,18 @@ class GerarCertificadoView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        # Pega o ID da inscrição a partir da URL
         inscricao_id = self.kwargs.get('inscricao_id')
 
         try:
-            # Garante que a inscrição existe E pertence ao usuário logado
             inscricao = Inscricao.objects.get(id=inscricao_id, aluno=request.user)
         except Inscricao.DoesNotExist:
             return Response({"detail": "Inscrição não encontrada ou não pertence a você."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Regra de negócio: SÓ gera certificado se o progresso for 100%
         if inscricao.progresso < 100:
             return Response({"detail": "Você precisa concluir 100% do curso para emitir o certificado."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Busca ou cria o registro do certificado para garantir que temos um código de validação
         certificado, created = Certificado.objects.get_or_create(inscricao=inscricao)
 
-        # Prepara os dados para o template HTML
         contexto = {
             'aluno_nome': inscricao.aluno.get_full_name() or inscricao.aluno.username,
             'curso_titulo': inscricao.curso.titulo,
@@ -165,15 +162,106 @@ class GerarCertificadoView(generics.GenericAPIView):
             'codigo_validacao': certificado.codigo_validacao
         }
 
-        # Renderiza o template HTML com os dados
         html_string = render_to_string('cursos/certificado_template.html', contexto)
 
-        # Gera o PDF a partir do HTML
         html = HTML(string=html_string, base_url=request.build_absolute_uri())
         pdf = html.write_pdf()
 
-        # Cria a resposta HTTP com o PDF para download
         response = HttpResponse(pdf, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="certificado-{inscricao.curso.titulo}.pdf"'
 
         return response
+
+class ForunsDisponiveisView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        foruns = []
+
+        foruns.append({
+            'tipo': 'ESCOLA',
+            'nome': 'Fórum da Escola',
+            'id': 'escola'
+        })
+
+        cursos_inscritos = Inscricao.objects.filter(aluno=user).select_related('curso')
+        for inscricao in cursos_inscritos:
+            foruns.append({
+                'tipo': 'CURSO',
+                'nome': f'Fórum - {inscricao.curso.titulo}',
+                'id': inscricao.curso.id
+            })
+            
+        turmas_membro = user.turmas_inscritas.all().select_related('curso')
+        for turma in turmas_membro:
+            foruns.append({
+                'tipo': 'TURMA',
+                'nome': f'Fórum - {turma.nome}',
+                'id': turma.id
+            })
+
+        return Response(foruns, status=status.HTTP_200_OK)
+
+class SelecaoForumView(View):
+    def get(self, request):
+        user = request.user
+        foruns = []
+
+        foruns.append({
+            'tipo': 'ESCOLA',
+            'nome': 'Fórum da Escola',
+            'parametro_url': 'escola=true' 
+        })
+
+        cursos_inscritos = Inscricao.objects.filter(aluno=user).select_related('curso')
+        for inscricao in cursos_inscritos:
+            foruns.append({
+                'tipo': 'CURSO',
+                'nome': f'Fórum - {inscricao.curso.titulo}',
+                'parametro_url': f'curso={inscricao.curso.id}'
+            })
+            
+        turmas_membro = user.turmas_inscritas.all().select_related('curso')
+        for turma in turmas_membro:
+            foruns.append({
+                'tipo': 'TURMA',
+                'nome': f'Fórum - {turma.nome}',
+                'parametro_url': f'turma={turma.id}'
+            })
+
+        contexto = {
+            'lista_de_foruns': foruns
+        }
+        
+        return render(request, 'cursos/selecao_forum.html', contexto)
+
+class ListaPostagensView(View):
+    def get(self, request):
+        curso_id = request.GET.get('curso')
+        turma_id = request.GET.get('turma')
+        escola = request.GET.get('escola')
+
+        queryset = Postagem.objects.select_related('autor', 'curso', 'turma').annotate(
+            num_comentarios=Count('comentarios', distinct=True)
+        )
+
+        if escola:
+            postagens = queryset.filter(curso__isnull=True, turma__isnull=True)
+            titulo_forum = "Fórum da Escola"
+        elif turma_id:
+            postagens = queryset.filter(turma_id=turma_id)
+            titulo_forum = f"Fórum da Turma {Turma.objects.get(id=turma_id).nome}"
+        elif curso_id:
+            postagens = queryset.filter(curso_id=curso_id)
+            titulo_forum = f"Fórum do Curso {Curso.objects.get(id=curso_id).titulo}"
+        else:
+            postagens = queryset.none()
+            titulo_forum = "Fórum Inválido"
+
+        contexto = {
+            'postagens': postagens,
+            'titulo_forum': titulo_forum
+        }
+        
+        return render(request, 'cursos/lista_postagens.html', contexto)

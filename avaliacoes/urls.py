@@ -1,7 +1,9 @@
+# Em avaliacoes/urls.py
 from django.urls import path
-from .views import MeuBoletimView
+from .views import BoletimView
+
+app_name = 'avaliacoes'
 
 urlpatterns = [
-    # Define a rota para a nossa view de boletim
-    path('meu-boletim/', MeuBoletimView.as_view(), name='meu-boletim'),
+    path('boletim/', BoletimView.as_view(), name='boletim-web'),
 ]

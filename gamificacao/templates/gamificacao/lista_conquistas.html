@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Conquistas{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">Minhas Conquistas</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for conquista_aluno in lista_de_conquistas %}
+            <div class="col">
+                <div class="card h-100 text-center border-warning">
+                    <div class="card-body">
+                        <i class="{{ conquista_aluno.conquista.icone }} display-1 text-warning"></i>
+                        <h5 class="card-title mt-3">{{ conquista_aluno.conquista.nome }}</h5>
+                        <p class="card-text text-muted">{{ conquista_aluno.conquista.descricao }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Obtida em: {{ conquista_aluno.data_obtencao|date:"d/m/Y" }}</small>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Você ainda não tem nenhuma conquista. Continue estudando! 💪
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

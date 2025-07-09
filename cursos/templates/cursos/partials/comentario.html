@@ -1,0 +1,27 @@
+<div class="comentario-wrapper" id="wrapper-comentario-{{ comentario.id }}">
+    <div class="comentario">
+        <div class="comentario-avatar">
+            <i class="bi bi-person-circle"></i>
+        </div>
+        <div class="comentario-main-content">
+            <div class="comentario-header">
+                <div class="comentario-autor-info">
+                    <span class="comentario-autor-nome">{{ comentario.autor.username }}</span>
+                    <span class="text-muted small ms-2">{{ comentario.data_criacao|timesince }} atrás</span>
+                </div>
+                </div>
+            <div class="comentario-texto">{{ comentario.conteudo|linebreaks }}</div>
+            <div class="comentario-acoes">
+                <a href="#" class="small">Responder</a>
+            </div>
+        </div>
+    </div>
+
+    {% if comentario.respostas.all %}
+        <div class="respostas-container">
+            {% for resposta in comentario.respostas.all %}
+                {% include 'cursos/partials/comentario.html' with comentario=resposta %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

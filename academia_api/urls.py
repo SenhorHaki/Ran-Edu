@@ -5,12 +5,17 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/cursos/', include('cursos.urls')),
+    path('app/cursos/', include('cursos.urls')),
+    path('app/', include('dashboard.urls')),
+    path('app/gamificacao/', include('gamificacao.urls')),
+    path('app/avaliacoes/', include('avaliacoes.urls')), 
+    
+
     path('api/auth/', include('usuarios.urls')),
+    path('api/cursos/', include('cursos.urls_api')),
     path('api/gamificacao/', include('gamificacao.urls')),
     path('api/avaliacoes/', include('avaliacoes.urls')),
     path('api/portal-responsavel/', include('portal_responsavel.urls')),
-    path('api/dashboard/', include('dashboard.urls')),
     path('api/notificacoes/', include('notificacoes.urls')),
     path('api/recomendacoes/', include('recomendacoes.urls')),
     path('api/biblioteca/', include('biblioteca.urls')), 

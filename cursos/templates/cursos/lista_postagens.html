@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo_forum }}{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">{{ titulo_forum }}</h1>
+        <a href="{% url 'cursos:selecao-forum' %}" class="btn btn-secondary btn-sm">Voltar à Seleção</a>
+    </div>
+
+    {% for post in postagens %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h4 class="card-title">{{ post.titulo }}</h4>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    por {{ post.autor.username }} - <small>{{ post.data_criacao|date:"d/m/Y H:i" }}</small>
+                </h6>
+                <p class="card-text">{{ post.conteudo|linebreaks }}</p>
+
+                <hr>
+                <h5 class="ms-2">Comentários ({{ post.num_comentarios }})</h5>
+                  
+                <div class="ms-3 border-start ps-3">
+                {% for comentario in post.comentarios.all %}
+                    {% if not comentario.parent %}
+                        {% include 'cursos/partials/comentario.html' with comentario=comentario %}
+                    {% endif %}
+                {% empty %}
+                    <p class="text-muted fst-italic">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+                {% endfor %}
+                </div>
+                          </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">
+            Nenhuma postagem encontrada neste fórum ainda. Seja o primeiro a criar uma!
+        </div>
+    {% endfor %}
+{% endblock %}

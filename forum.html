@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fórum do Curso</title>
+    <title>Fórum</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
@@ -13,44 +13,6 @@
         .main-nav a:hover, .main-nav a.active { background-color: #e3f2fd; color: #0d47a1; }
         .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         h1.page-title { color: #0d47a1; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; }
-        .post { padding: 15px; margin-bottom: 20px; }
-        .post:not(:last-child) { border-bottom: 1px solid #ddd; }
-        .post-titulo { font-size: 1.3em; font-weight: bold; margin-bottom: 5px;}
-        .post-autor { font-size: 0.9em; color: #666; margin-bottom: 10px; display: flex; align-items: center; }
-        .post-autor i { margin-right: 8px; }
-        .timestamp { font-weight: normal; color: #8e8e8e; }
-        .post-conteudo { line-height: 1.6; }
-        .comentarios-container { margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
-        .comentario-wrapper { padding: 10px 0; }
-        .comentario { display: flex; align-items: flex-start; gap: 12px; }
-        .comentario-avatar { background-color: #ced4da; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .comentario-avatar i { color: #fff; font-size: 1.5em; }
-        .comentario-main-content { flex-grow: 1; }
-        .comentario-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .comentario-autor-info { font-size: 0.9em; color: #666; margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-        .comentario-autor-nome { font-weight: bold; color: #262626; }
-        .selo-autor { background-color: #e7f3ff; color: #007bff; font-size: 0.7em; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-        .comentario-texto { font-size: 0.95em; white-space: pre-wrap; word-wrap: break-word; }
-        .comentario-acoes { margin-top: 10px; }
-        .comentario-acoes button { background: none; border: none; cursor: pointer; color: #8e8e8e; font-weight: bold; font-size: 0.8em; padding: 0; }
-        .comentario-acoes button:hover { text-decoration: underline; }
-        .dropdown { position: relative; }
-        .btn-menu { background: none; border: none; cursor: pointer; color: #888; font-size: 1.1em; padding: 5px; }
-        .btn-menu:hover { background-color: #f1f1f1; border-radius: 50%;}
-        .dropdown-menu { display: none; position: absolute; right: 0; top: 25px; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 100; border-radius: 8px; border: 1px solid #ddd; padding: 5px 0; }
-        .dropdown-menu button { color: black; padding: 10px 15px; text-decoration: none; display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-size: 0.9em; }
-        .dropdown-menu button:hover { background-color: #f1f1f1; }
-        .dropdown-menu button i { margin-right: 12px; width: 15px; text-align: center; }
-        .dropdown-menu button.dropdown-item-vermelho { color: #d32f2f; }
-        .form-edicao-comentario { display: none; margin-top: 10px; }
-        .form-comentario, .form-edicao-comentario, .form-resposta { margin-top: 15px; }
-        .form-comentario textarea, .form-edicao-comentario textarea, .form-resposta textarea { width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; padding: 8px; font-size: 1em; }
-        .form-comentario button, .form-edicao-comentario button, .form-resposta button { background-color: #0d47a1; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .form-edicao-botoes, .form-resposta-botoes { text-align: right; margin-top: 5px; display: flex; gap: 5px; justify-content: flex-end; }
-        #status-message { text-align: center; font-size: 1.2em; color: #888; padding: 20px; }
-        .show { display: block; }
-        .respostas-container { margin-left: 52px; padding-left: 15px; border-left: 2px solid #e9ecef; margin-top: 10px; }
-        .form-resposta { display: none; }
     </style>
 </head>
 <body>
@@ -58,15 +20,23 @@
         <h1 class="logo">Ran-Edu</h1>
         <nav class="main-nav">
             <a href="home.html">Dashboard</a>
-            <a href="forum.html" class="active">Fórum</a>
+            <a href="forumglobal.html" class="active">Fórum</a>
             <a href="#" id="logout-button">Sair</a>
         </nav>
     </header>
 
     <div class="container">
-        <h1 class="page-title">Fórum</h1>
+        <h1 id="forum-title" class="page-title">Fórum</h1>
         <div id="posts-container">
-            <p id="status-message">Carregando...</p>
+             <p id="status-message">Carregando...</p>
+        </div>
+         <div id="form-novo-post-container" style="margin-top: 30px; border-top: 2px solid #0d47a1; padding-top: 20px;">
+            <h2>Criar Nova Postagem</h2>
+            <form id="form-novo-post">
+                <input type="text" id="novo-post-titulo" placeholder="Título da sua postagem" required style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
+                <textarea id="novo-post-conteudo" placeholder="Escreva sua mensagem..." rows="5" required style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;"></textarea>
+                <button type="submit" style="background-color: #0d47a1; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Enviar Postagem</button>
+            </form>
         </div>
     </div>
 
@@ -74,108 +44,85 @@
         const meuToken = localStorage.getItem('accessToken');
         const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
         let usuarioLogadoId = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const tipoForum = urlParams.get('tipo');
+        const idForum = urlParams.get('id');
 
-        // --- FUNÇÕES JAVASCRIPT COMPLETAS E CORRIGIDAS ---
+        let apiUrl = 'http://127.0.0.1:8000/api/cursos/postagens/';
+        if (tipoForum === 'escola') {
+            apiUrl += '?escola=true';
+        } else if (tipoForum === 'curso') {
+            apiUrl += `?curso=${idForum}`;
+        } else if (tipoForum === 'turma') {
+            apiUrl += `?turma=${idForum}`;
+        }
 
-        // Funções de formatação e UI
-        function formatarTempoAtras(dataString) { const agora = new Date(); const dataPostagem = new Date(dataString); const s = Math.round((agora - dataPostagem) / 1000); const m = Math.round(s / 60); const h = Math.round(s / 3600); const d = Math.round(s / 86400); const w = Math.round(d / 7); if (s < 60) return 'agora'; if (m < 60) return `${m}m`; if (h < 24) return `${h}h`; if (d < 7) return `${d}d`; return `${w}s`; }
-        window.onclick = function(event) { if (!event.target.closest('.dropdown')) { document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show')); } }
-        function toggleDropdown(comentarioId) { const menuAtual = document.getElementById(`dropdown-${comentarioId}`); const estaAberto = menuAtual.classList.contains('show'); document.querySelectorAll('.dropdown-menu.show').forEach(menuAberto => { if (menuAberto.id !== `dropdown-${comentarioId}`) { menuAberto.classList.remove('show'); } }); menuAtual.classList.toggle('show'); }
-        
-        // Funções para o formulário de RESPOSTA
-        function prepararFormularioDeResposta(topLevelCommentId, usernameToMention) { document.querySelectorAll('.form-resposta').forEach(f => f.style.display = 'none'); const form = document.getElementById(`form-resposta-${topLevelCommentId}`); if (form) { const textarea = form.querySelector('textarea'); textarea.value = usernameToMention ? `@${usernameToMention} ` : ''; form.style.display = 'block'; textarea.focus(); } }
-        function cancelarResposta(topLevelCommentId) { const form = document.getElementById(`form-resposta-${topLevelCommentId}`); if (form) { form.style.display = 'none'; form.querySelector('textarea').value = ''; } }
-        
-        // Funções para o formulário de EDIÇÃO
-        function mostrarFormEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'none'; div.querySelector('.comentario-acoes').style.display = 'none'; const formEdicao = div.querySelector('.form-edicao-comentario'); formEdicao.style.display = 'block'; const textarea = formEdicao.querySelector('textarea'); textarea.value = div.querySelector('.comentario-texto').textContent.trim(); textarea.focus(); } }
-        function cancelarEdicao(comentarioId) { const div = document.getElementById(`wrapper-comentario-${comentarioId}`); if(div){ div.querySelector('.comentario-texto').style.display = 'block'; div.querySelector('.comentario-acoes').style.display = 'block'; div.querySelector('.form-edicao-comentario').style.display = 'none'; } }
+        function criarHtmlComentario(comentario, postAutorId, nivel = 0) { /* ... toda a sua lógica de criar comentário ... */ }
+        async function enviarNovoPost(event) {
+            event.preventDefault();
+            const titulo = document.getElementById('novo-post-titulo').value.trim();
+            const conteudo = document.getElementById('novo-post-conteudo').value.trim();
+            if (!titulo || !conteudo) return;
 
-        // Funções de API (CRUD)
-        async function salvarEdicao(event, comentarioId) { event.preventDefault(); const form = event.target; const textarea = form.querySelector('textarea'); const novoConteudo = textarea.value.trim(); if (!novoConteudo) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'PATCH', headers, body: JSON.stringify({ conteudo: novoConteudo }) }); if (!res.ok) throw new Error('Falha ao salvar.'); const atualizado = await res.json(); const textoDiv = document.getElementById(`comentario-texto-${comentarioId}`); textoDiv.textContent = atualizado.conteudo; cancelarEdicao(comentarioId); } catch (e) { alert(`Erro: ${e.message}`); } }
-        async function apagarComentario(comentarioId) { if (!confirm('Tem certeza?')) return; try { const res = await fetch(`http://127.0.0.1:8000/api/cursos/comentarios/${comentarioId}/`, { method: 'DELETE', headers }); if (res.status === 204) { document.getElementById(`wrapper-comentario-${comentarioId}`).remove(); } else { const errData = await res.json(); throw new Error(errData.detail || 'Falha ao apagar.'); } } catch (e) { alert(`Erro: ${e.message}`); } }
-        async function enviarComentario(event) { event.preventDefault(); const form = event.target; const postId = form.dataset.postId; const postAutorId = form.dataset.postAutorId; const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return; try { const res = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers, body: JSON.stringify({ conteudo: conteudo, postagem: postId }) }); if (!res.ok) throw new Error('Falha ao enviar.'); const novo = await res.json(); document.querySelector(`#post-${postId} .comentarios-container`).insertAdjacentHTML('beforeend', criarHtmlComentario(novo, postAutorId, 0)); textarea.value = ''; } catch (e) { alert(`Erro: ${e.message}`); } }
-        async function enviarResposta(event, parentId, postAutorId) { event.preventDefault(); const form = event.target; const textarea = form.querySelector('textarea'); const conteudo = textarea.value.trim(); if (!conteudo) return; try { const response = await fetch('http://127.0.0.1:8000/api/cursos/comentarios/', { method: 'POST', headers, body: JSON.stringify({ conteudo, parent: parentId }) }); if (!response.ok) throw new Error('Falha ao enviar a resposta.'); const novaResposta = await response.json(); const containerDeRespostas = document.getElementById(`respostas-de-${parentId}`); containerDeRespostas.insertAdjacentHTML('beforeend', criarHtmlComentario(novaResposta, postAutorId, 1)); textarea.value = ''; cancelarResposta(parentId); } catch (error) { alert(`Erro: ${error.message}`); } }
-
-        // Função principal para criar o HTML
-        function criarHtmlComentario(comentario, postAutorId, nivel = 0) {
-            let menuItensHtml = `<button class="dropdown-item" onclick="alert('Compartilhar não implementado.')"><i class="fas fa-share-square"></i> Compartilhar</button>`;
-            if (usuarioLogadoId && usuarioLogadoId === comentario.autor) { menuItensHtml += `<button class="dropdown-item" onclick="mostrarFormEdicao(${comentario.id})"><i class="fas fa-pencil-alt"></i> Editar</button><button class="dropdown-item dropdown-item-vermelho" onclick="apagarComentario(${comentario.id})"><i class="fas fa-trash-alt"></i> Apagar</button>`; } 
-            else if (usuarioLogadoId) { menuItensHtml += `<button class="dropdown-item dropdown-item-vermelho" onclick="alert('Denúncia não implementada.')"><i class="fas fa-flag"></i> Denunciar</button><button class="dropdown-item dropdown-item-vermelho" onclick="alert('Bloquear não implementado.')"><i class="fas fa-user-slash"></i> Bloquear</button>`; }
-            
-            let edicaoHtml = '';
-            if (comentario.data_criacao !== comentario.data_edicao && (new Date(comentario.data_edicao) - new Date(comentario.data_criacao)) / 1000 > 60) {
-                edicaoHtml = ` <span class="timestamp">• (editado)</span>`;
-            }
-            let seloAutorHtml = ''; 
-            if (comentario.autor === postAutorId) { seloAutorHtml = `<span class="selo-autor">Autor</span>`; }
-            
-            let responderHtml = `<button onclick="prepararFormularioDeResposta(${comentario.parent || comentario.id}, '${comentario.autor_username}')">Responder</button>`;
-            
-            let respostasHtml = '';
-            if (nivel === 0 && comentario.respostas && comentario.respostas.length > 0) {
-                respostasHtml = comentario.respostas.map(resposta => criarHtmlComentario(resposta, postAutorId, nivel + 1)).join('');
-            }
-            
-            let formRespostaHtml = '';
-            if (nivel === 0) {
-                formRespostaHtml = `<div class="respostas-container">
-                        <form class="form-resposta" id="form-resposta-${comentario.id}" onsubmit="enviarResposta(event, ${comentario.id}, ${postAutorId})">
-                            <textarea placeholder="Escreva sua resposta..." rows="2"></textarea>
-                            <div class="form-resposta-botoes"><button type="button" onclick="cancelarResposta(${comentario.id})">Cancelar</button><button type="submit">Enviar</button></div>
-                        </form>
-                    </div>`;
+            const body = { titulo, conteudo };
+            if (tipoForum === 'curso') {
+                body.curso = idForum;
+            } else if (tipoForum === 'turma') {
+                body.turma = idForum;
             }
 
-            return `
-                <div class="comentario-wrapper" id="wrapper-comentario-${comentario.id}">
-                    <div class="comentario">
-                        <div class="comentario-avatar"><i class="fas fa-user-circle"></i></div>
-                        <div class="comentario-main-content">
-                            <div class="comentario-header">
-                                <div class="comentario-autor-info">${seloAutorHtml}<span class="comentario-autor-nome">${comentario.autor_username}</span><span class="timestamp">${formatarTempoAtras(comentario.data_criacao)}</span>${edicaoHtml}</div>
-                                <div class="dropdown"><button onclick="toggleDropdown(${comentario.id})" class="btn-menu"><i class="fas fa-ellipsis-v"></i></button><div id="dropdown-${comentario.id}" class="dropdown-menu">${menuItensHtml}</div></div>
-                            </div>
-                            <div class="comentario-texto" id="comentario-texto-${comentario.id}">${comentario.conteudo}</div>
-                            <div class="comentario-acoes">${responderHtml}</div>
-                            <form class="form-edicao-comentario" onsubmit="salvarEdicao(event, ${comentario.id})"><textarea rows="3"></textarea><div class="form-edicao-botoes"><button type="button" onclick="cancelarEdicao(${comentario.id})">Cancelar</button><button type="submit">Salvar</button></div></form>
-                        </div>
-                    </div>
-                    <div class="respostas-container" id="respostas-de-${comentario.id}">${respostasHtml}</div>
-                    ${formRespostaHtml}
-                </div>`;
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/cursos/postagens/', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Não foi possível criar a postagem.');
+                }
+                window.location.reload();
+            } catch (error) {
+                alert(`Erro: ${error.message}`);
+            }
         }
         
-        // Lógica principal que roda quando a página carrega
         document.addEventListener('DOMContentLoaded', async () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) { logoutButton.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); window.location.href = 'login.html'; }); }
+            if (!meuToken) { window.location.href = 'login.html'; return; }
+
             const postsContainer = document.getElementById('posts-container');
             const statusMessage = document.getElementById('status-message');
-            // ... (o resto da lógica de carregar, com a verificação do token já feita no topo) ...
+            document.getElementById('form-novo-post').addEventListener('submit', enviarNovoPost);
+            
+            if (!tipoForum || !idForum) {
+                statusMessage.textContent = 'Fórum inválido. Por favor, selecione um fórum na página anterior.';
+                statusMessage.style.color = 'red';
+                document.getElementById('form-novo-post-container').style.display = 'none';
+                return;
+            }
+
             try {
-                statusMessage.textContent = 'Carregando...';
                 const userResponse = await fetch('http://127.0.0.1:8000/api/auth/me/', { headers });
-                if (!userResponse.ok) throw new Error('Token inválido ou expirado. Faça o login novamente.');
+                if (!userResponse.ok) throw new Error('Token inválido.');
                 const usuario = await userResponse.json();
                 usuarioLogadoId = usuario.id;
 
-                const postsResponse = await fetch('http://127.0.0.1:8000/api/cursos/postagens/', { headers });
+                const postsResponse = await fetch(apiUrl, { headers });
                 if (!postsResponse.ok) throw new Error('Não foi possível carregar as postagens.');
                 const posts = await postsResponse.json();
                 
+                statusMessage.style.display = 'none';
+                postsContainer.innerHTML = '';
+                
+                document.getElementById('forum-title').textContent = `Fórum (${tipoForum}: ${idForum})`;
+
                 if (posts.length === 0) {
-                    statusMessage.textContent = 'Nenhuma postagem encontrada.';
+                    postsContainer.innerHTML = '<p>Nenhuma postagem encontrada neste fórum ainda. Seja o primeiro a criar uma!</p>';
                 } else {
-                    statusMessage.style.display = 'none';
-                    postsContainer.innerHTML = '';
                     posts.forEach(post => {
-                        const comentariosDeTopo = post.comentarios.filter(c => c.parent === null);
-                        const comentariosHtml = comentariosDeTopo.map(comentario => criarHtmlComentario(comentario, post.autor, 0)).join('');
-                        const postElement = document.createElement('div');
-                        postElement.id = `post-${post.id}`;
-                        postElement.classList.add('post');
-                        postElement.innerHTML = `<div class="post-titulo">${post.titulo}</div><div class="post-autor"><span>por: ${post.autor_username} • <span class="timestamp">${formatarTempoAtras(post.data_criacao)}</span></span></div><div class="post-conteudo">${post.conteudo}</div><div class="comentarios-container">${comentariosHtml}</div><form class="form-comentario" data-post-id="${post.id}" data-post-autor-id="${post.autor}"><textarea placeholder="Escreva seu comentário aqui..." rows="2"></textarea><button type="submit">Enviar</button></form>`;
-                        postsContainer.appendChild(postElement);
                     });
-                    document.querySelectorAll('.form-comentario').forEach(form => form.addEventListener('submit', enviarComentario));
                 }
             } catch (error) {
                 postsContainer.innerHTML = '';
