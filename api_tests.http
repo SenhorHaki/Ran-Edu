@@ -6,7 +6,7 @@
 ### Login como aluno_lento
 ### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgzNTk2Mzg5LCJpYXQiOjE3NTIwNjAzODksImp0aSI6IjJlNTI2ZTRkNjUzNTRhNzBiZTI3ZGJlMTdlZDA5ZDUxIiwidXNlcl9pZCI6MTF9.2UPPQcWOOCDFBbmWE-q6rojVkxoF82q8euUQ0oEf1hY
 ### Login como Professor
-### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgzNjEzMDcwLCJpYXQiOjE3NTIwNzcwNzAsImp0aSI6ImU4NzJhMjIzYjg1NTQ1ZTc4YzYzNjRkZDc4OGZhMjRiIiwidXNlcl9pZCI6MTJ9.mlAkrpLMsn4RI4BO9l5Ei4brkYUnf3dc6U02W-25PXc
+### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgzNzA0NDk2LCJpYXQiOjE3NTIxNjg0OTYsImp0aSI6IjgyZjA1ZGFiZWU1ODQ3MDA5MDc3NTI0MjRkMjc2N2M1IiwidXNlcl9pZCI6MTJ9.7IICv2RXwVl_wLVq5OVddw2yiDvHffHBQsS7l_358Ec
 ### Login como Aluno_gamer
 ### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgzNjEzNDcyLCJpYXQiOjE3NTIwNzc0NzIsImp0aSI6IjRjZTYyNjhjZjYxNjRkYjk4ODg4ODFlODRlNjBiMTg4IiwidXNlcl9pZCI6NH0.eur-slsX7L-pyd-rfWjCp2A4M99bmc9XrK6GWWZpfL4
 
@@ -14,8 +14,8 @@ POST http://127.0.0.1:8000/api/auth/token/
 Content-Type: application/json
 
 {
-    "username": "aluno_gamer",
-    "password": "1234"
+    "username": "prof_silva",
+    "password": "Amodanova3.0"
 }
 
 

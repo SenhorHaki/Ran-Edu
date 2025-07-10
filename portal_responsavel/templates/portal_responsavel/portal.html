@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Portal do Responsável{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Portal do Responsável</h1>
+    <p class="lead text-muted mb-4">Acompanhe aqui o desempenho dos alunos sob sua responsabilidade.</p>
+
+    {% for aluno in alunos_associados %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-person-fill me-2"></i>{{ aluno.get_full_name|default:aluno.username }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Cursos em Andamento</h5>
+                        <ul class="list-group list-group-flush">
+                            {% for inscricao in aluno.inscricao_set.all %}
+                                <li class="list-group-item">
+                                    {{ inscricao.curso.titulo }}
+                                    <div class="progress mt-1" role="progressbar" style="height: 5px;">
+                                        <div class="progress-bar bg-info" style="width: {{ inscricao.progresso }}%;"></div>
+                                    </div>
+                                    <small class="text-muted">{{ inscricao.progresso }}% concluído</small>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item text-muted">Nenhum curso em andamento.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mt-4 mt-md-0">
+                        <h5>Boletim de Notas</h5>
+                        <ul class="list-group list-group-flush">
+                            {% for nota in aluno.notas.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ nota.avaliacao.titulo }}
+                                    <span class="badge bg-primary rounded-pill">{{ nota.valor|floatformat:2 }}</span>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item text-muted">Nenhuma nota lançada.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">
+            Não há alunos associados à sua conta.
+        </div>
+    {% endfor %}
+{% endblock %}

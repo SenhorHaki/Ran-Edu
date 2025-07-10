@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Minha Agenda{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Minha Agenda</h1>
+
+    <div class="list-group">
+        {% for evento in eventos %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ evento.titulo }}</h5>
+                    <small class="text-muted">{{ evento.data_inicio|date:"d/m/Y H:i" }}</small>
+                </div>
+                <p class="mb-1">{{ evento.descricao }}</p>
+                <small class="text-primary"><strong>Curso:</strong> {{ evento.curso.titulo }}</small>
+                <span class="badge rounded-pill text-bg-info float-end">{{ evento.get_tipo_display }}</span>
+            </div>
+        {% empty %}
+            <div class="list-group-item">
+                <p class="text-muted text-center p-4">Nenhum evento agendado para seus cursos no momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

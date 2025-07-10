@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import PortalResponsavelView
+from .views import PortalView
+
+app_name = 'portal_responsavel'
 
 urlpatterns = [
-    path('meus-alunos/', PortalResponsavelView.as_view(), name='portal-meus-alunos'),
+    path('', PortalView.as_view(), name='portal'),
 ]

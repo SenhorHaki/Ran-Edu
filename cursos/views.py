@@ -3,8 +3,11 @@ from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView 
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.db.models import Count, Q
@@ -17,6 +20,7 @@ from .permissions import IsOwnerOrReadOnly, IsEnrolled, CanPostInForum
 from gamificacao.models import Conquista, ConquistaDoAluno
 
 from weasyprint import HTML
+import locale
 
 
 class CursoViewSet(viewsets.ModelViewSet):
@@ -139,9 +143,16 @@ class ComentarioViewSet(viewsets.ModelViewSet):
             serializer.save(autor=self.request.user)
 
 class GerarCertificadoView(generics.GenericAPIView):
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+
+        try:
+            locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+        except locale.Error:
+            locale.setlocale(locale.LC_TIME, '')
+        
         inscricao_id = self.kwargs.get('inscricao_id')
 
         try:
@@ -265,3 +276,19 @@ class ListaPostagensView(View):
         }
         
         return render(request, 'cursos/lista_postagens.html', contexto)
+
+class ListaCertificadosView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+
+    def get(self, request):
+        certificados = Certificado.objects.filter(
+            inscricao__aluno=request.user
+        ).select_related('inscricao__curso')
+
+        contexto = {
+            'lista_de_certificados': certificados
+        }
+
+        return render(request, 'cursos/lista_certificados.html', contexto)
+
+

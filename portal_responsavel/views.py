@@ -1,28 +1,31 @@
 # Em portal_responsavel/views.py
-
-from rest_framework import generics, permissions
+from django.shortcuts import render, redirect
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from usuarios.models import Usuario, ResponsavelAluno
-from .serializers import AlunoParaResponsavelSerializer
 
-class PortalResponsavelView(generics.ListAPIView):
-    """
-    View principal do Portal do Responsável.
-    Lista todos os alunos associados ao responsável logado.
-    """
-    serializer_class = AlunoParaResponsavelSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class PortalView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+    template_name = 'portal_responsavel/portal.html'
 
-    def get_queryset(self):
-        # O usuário logado (o responsável) é pego da requisição
-        responsavel = self.request.user
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or request.user.tipo != Usuario.TipoUsuario.RESPONSAVEL:
+            return redirect('dashboard:home') # Redireciona para o dashboard se não for responsável
+        return super().dispatch(request, *args, **kwargs)
 
-        # Busca na tabela de relação os IDs de todos os alunos deste responsável
+    def get(self, request):
+        responsavel = request.user
         aluno_ids = ResponsavelAluno.objects.filter(
             responsavel=responsavel
         ).values_list('aluno_id', flat=True)
 
-        # Retorna os objetos de Usuario para cada um desses IDs de aluno
-        return Usuario.objects.filter(id__in=aluno_ids).prefetch_related(
+        alunos_associados = Usuario.objects.filter(id__in=aluno_ids).prefetch_related(
             'inscricao_set__curso',
             'notas__avaliacao'
         )
+
+        contexto = {
+            'alunos_associados': alunos_associados
+        }
+
+        return render(request, self.template_name, contexto)

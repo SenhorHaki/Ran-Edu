@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import RecomendacaoListView
+from .views import RecomendacaoView
+
+app_name = 'recomendacoes'
 
 urlpatterns = [
-    path('', RecomendacaoListView.as_view(), name='lista-recomendacoes'),
+    path('', RecomendacaoView.as_view(), name='lista-recomendacoes'),
 ]

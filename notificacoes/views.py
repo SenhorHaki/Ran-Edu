@@ -1,10 +1,16 @@
-# Em notificacoes/views.py
-
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Notificacao
 from .serializers import NotificacaoSerializer
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+
+
+
 
 class NotificacaoViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -32,3 +38,20 @@ class NotificacaoViewSet(viewsets.ReadOnlyModelViewSet):
         notificacao.save()
         return Response({'status': 'notificação marcada como lida'})
     
+class PainelAlertasView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+    template_name = 'notificacoes/painel_alertas.html'
+
+    def get(self, request):
+        notificacoes = Notificacao.objects.filter(destinatario=request.user)
+        contexto = { 'notificacoes': notificacoes }
+        return render(request, self.template_name, contexto)
+
+class MarcarAlertaComoLidoView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+
+    def post(self, request, pk):
+        notificacao = get_object_or_404(Notificacao, id=pk, destinatario=request.user)
+        notificacao.lida = True
+        notificacao.save()
+        return redirect('notificacoes:painel-alertas')

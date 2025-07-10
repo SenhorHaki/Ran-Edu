@@ -1,7 +1,8 @@
-from rest_framework.routers import DefaultRouter
-from .views import RecursoViewSet
+from django.urls import path
+from .views import BibliotecaView
 
-router = DefaultRouter()
-router.register(r'recursos', RecursoViewSet, basename='recurso')
+app_name = 'biblioteca'
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', BibliotecaView.as_view(), name='lista-recursos'),
+]

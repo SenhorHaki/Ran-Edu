@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Painel de Alertas{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Painel de Alertas</h1>
+
+    <div class="list-group">
+        {% for notificacao in notificacoes %}
+            <div class="list-group-item list-group-item-action d-flex gap-3 py-3 {% if notificacao.lida %}text-muted{% endif %}">
+                <i class="bi bi-exclamation-triangle-fill fs-4 {% if notificacao.lida %}text-secondary{% else %}text-warning{% endif %}"></i>
+                <div class="d-flex gap-2 w-100 justify-content-between">
+                    <div>
+                        <p class="mb-1">{{ notificacao.mensagem }}</p>
+                        <p class="mb-0 opacity-75"><small>{{ notificacao.data_criacao|timesince }} atrás</small></p>
+                    </div>
+                    {% if not notificacao.lida %}
+                        <form action="{% url 'notificacoes:marcar-como-lida' pk=notificacao.id %}" method="post" class="ms-auto">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-light">Marcar como lida</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="list-group-item">
+                <p class="text-muted text-center p-4">Você não tem nenhum alerta no momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

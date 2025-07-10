@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Materiais Recomendados{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Materiais Recomendados</h1>
+    <p class="lead text-muted mb-4">
+        Aqui estão alguns materiais extras para os cursos em que você está inscrito.
+    </p>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for material in recomendacoes %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title d-flex align-items-center">
+                            <i class="bi 
+                                {% if material.tipo == 'VIDEO' %}bi-youtube text-danger
+                                {% elif material.tipo == 'ARTIGO' %}bi-file-text-fill text-info
+                                {% elif material.tipo == 'LIVRO' %}bi-book-fill text-success
+                                {% else %}bi-link-45deg{% endif %} me-2"></i>
+                            {{ material.titulo }}
+                        </h5>
+                        <p class="card-text">{{ material.descricao|truncatewords:20 }}</p>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <a href="{{ material.link }}" class="btn btn-primary btn-sm" target="_blank">Acessar Material</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-secondary">
+                    Nenhum material recomendado para seus cursos no momento.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

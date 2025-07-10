@@ -1,4 +1,3 @@
-# Em avaliacoes/urls.py
 from django.urls import path
 from .views import BoletimView
 

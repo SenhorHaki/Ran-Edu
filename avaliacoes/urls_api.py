@@ -1,12 +1,7 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import AvaliacaoViewSet, NotaViewSet, MeuBoletimView
-
-router = DefaultRouter()
-router.register(r'avaliacoes', AvaliacaoViewSet, basename='avaliacao')
-router.register(r'notas', NotaViewSet, basename='nota')
+# Em avaliacoes/urls_api.py
+from django.urls import path
+from .views import MeuBoletimView
 
 urlpatterns = [
-    path('', include(router.urls)),
     path('meu-boletim/', MeuBoletimView.as_view(), name='meu-boletim-api'),
 ]
