@@ -3,8 +3,8 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vamos-trocar-esta-chave-depois' # Chave temporária
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -105,7 +105,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 
-# Para permitir que seu arquivo local (file://) acesse a API
-#CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True 
+
+LOGIN_URL = 'usuarios:login'

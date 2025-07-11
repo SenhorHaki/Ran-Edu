@@ -4,22 +4,20 @@
 
 {% block content %}
     <h1 class="mb-4">Minha Agenda</h1>
-
-    <div class="list-group">
-        {% for evento in eventos %}
-            <div class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ evento.titulo }}</h5>
-                    <small class="text-muted">{{ evento.data_inicio|date:"d/m/Y H:i" }}</small>
-                </div>
-                <p class="mb-1">{{ evento.descricao }}</p>
-                <small class="text-primary"><strong>Curso:</strong> {{ evento.curso.titulo }}</small>
-                <span class="badge rounded-pill text-bg-info float-end">{{ evento.get_tipo_display }}</span>
-            </div>
-        {% empty %}
-            <div class="list-group-item">
-                <p class="text-muted text-center p-4">Nenhum evento agendado para seus cursos no momento.</p>
-            </div>
-        {% endfor %}
+    <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+                {# Lógica para mostrar um ícone diferente para cada tipo de evento #}
+                <i class="bi 
+                    {% if evento.tipo == 'PROVA' %}bi-patch-check-fill text-danger
+                    {% elif evento.tipo == 'AULA_AO_VIVO' %}bi-camera-video-fill text-primary
+                    {% elif evento.tipo == 'ENTREGA_TRABALHO' %}bi-file-earmark-arrow-up-fill text-success
+                    {% else %}bi-calendar-event-fill text-secondary{% endif %} me-2"></i>
+                {{ evento.titulo }}
+            </h5>
+            <small class="text-muted">{{ evento.data_inicio|date:"d/m/Y H:i" }}</small>
+        </div>
+        <p class="mb-1" style="padding-left: 38px;">{{ evento.descricao }}</p>
+        <small class="text-primary" style="padding-left: 38px;"><strong>Curso:</strong> {{ evento.curso.titulo }}</small>
     </div>
 {% endblock %}
