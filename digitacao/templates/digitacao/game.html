@@ -32,7 +32,8 @@
         <p>Seu resultado foi salvo.</p>
         <div id="leaderboard-container" class="mt-4">
             <h3>Placar de Líderes</h3>
-            <table id="leaderboard-tabela" class="table w-75 mx-auto"></table>
+            <table id="leaderboard-tabela" class="table w-75 mx-auto">
+                </table>
         </div>
         <button id="play-again-btn" class="btn btn-primary btn-lg mt-3">Jogar Novamente</button>
     </div>
@@ -42,17 +43,29 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const meuToken = localStorage.getItem('accessToken');
-        if (!meuToken) { window.location.href = '/login.html'; return; }
-
-        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${meuToken}` };
+        // --- 1. CONFIGURAÇÃO INICIAL E DADOS ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
 
         const licoesJson = '{{ licoes_json|escapejs }}';
         let licoes = [];
         try {
             licoes = JSON.parse(licoesJson).map(item => ({ id: item.pk, ...item.fields }));
-        } catch(e) {
-            document.querySelector('.container').innerHTML = '<h1>Erro ao carregar lições.</h1>';
+        } catch (e) {
+            document.querySelector('.container').innerHTML = '<h1>Erro ao carregar lições do jogo.</h1>';
             return;
         }
 
@@ -63,6 +76,7 @@
             }
         });
 
+        // --- 2. ELEMENTOS DA PÁGINA ---
         const setupDiv = document.getElementById('setup-div');
         const gameDiv = document.getElementById('game-div');
         const resultadoDiv = document.getElementById('resultado-div');
@@ -73,9 +87,11 @@
         const restartLessonBtn = document.getElementById('restart-lesson-btn');
         const playAgainBtn = document.getElementById('play-again-btn');
 
+        // --- 3. VARIÁVEIS DE ESTADO DO JOGO ---
         let licaoAtual;
         let indexAtual = 0, erros = 0, startTime, timerInterval;
 
+        // --- 4. EVENT LISTENERS ---
         document.querySelectorAll('.btn-dificuldade').forEach(button => {
             button.addEventListener('click', () => {
                 const dificuldade = button.dataset.dificuldade;
@@ -84,11 +100,18 @@
                     licaoAtual = licoesDoNivel[Math.floor(Math.random() * licoesDoNivel.length)];
                     iniciarJogo();
                 } else {
-                    alert(`Nenhuma lição encontrada para o nível ${dificuldade}.`);
+                    alert(`Nenhuma lição encontrada para o nível ${dificuldade}. Cadastre no admin.`);
                 }
             });
         });
+        
+        restartLessonBtn.addEventListener('click', iniciarJogo);
+        playAgainBtn.addEventListener('click', () => {
+            resultadoDiv.style.display = 'none';
+            setupDiv.style.display = 'block';
+        });
 
+        // --- 5. FUNÇÕES DO JOGO ---
         function iniciarJogo() {
             setupDiv.style.display = 'none';
             resultadoDiv.style.display = 'none';
@@ -127,7 +150,7 @@
             indexAtual++;
             if (indexAtual < spans.length) { spans[indexAtual].classList.add('cursor'); } else { finalizarJogo(); }
         }
-
+        
         function atualizarStats() {
             if (!startTime) return;
             const tempoDecorrido = Math.floor((new Date() - startTime) / 1000);
@@ -144,22 +167,37 @@
             document.removeEventListener('keydown', handleKeyPress);
             clearInterval(timerInterval);
             atualizarStats();
+            
+            const postHeaders = { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken };
+
             try {
-                await fetch(`http://127.0.0.1:8000/api/digitacao/resultados/`, {
+                // Salva o resultado do jogador
+                await fetch('/api/digitacao/resultados/', {
                     method: 'POST',
-                    headers: headers,
+                    headers: postHeaders,
                     body: JSON.stringify({ licao: licaoAtual.id, palavras_por_minuto: parseInt(wpmEl.textContent), precisao: parseFloat(accuracyEl.textContent) })
                 });
-            } catch(error) { console.error('Falha ao salvar resultado:', error); }
+
+                // Busca o leaderboard atualizado
+                const lbResponse = await fetch(`/api/digitacao/licoes/${licaoAtual.id}/leaderboard/`);
+                const lbData = await lbResponse.json();
+                
+                // Monta a tabela do leaderboard
+                const tabela = document.getElementById('leaderboard-tabela');
+                tabela.innerHTML = '<thead><tr><th>#</th><th>Jogador</th><th>PPM</th><th>Precisão</th></tr></thead><tbody></tbody>';
+                const corpoTabela = tabela.querySelector('tbody');
+                lbData.forEach((resultado, index) => {
+                    corpoTabela.innerHTML += `<tr><td class="fw-bold">${index + 1}</td><td>${resultado.aluno_username}</td><td>${resultado.palavras_por_minuto}</td><td>${resultado.precisao.toFixed(1)}%</td></tr>`;
+                });
+
+            } catch(error) { 
+                console.error('Falha ao salvar ou buscar resultados:', error);
+                document.getElementById('leaderboard-container').innerHTML = '<p class="text-danger">Não foi possível carregar o placar.</p>';
+            }
+
             gameDiv.style.display = 'none';
             resultadoDiv.style.display = 'block';
         }
-
-        restartLessonBtn.addEventListener('click', iniciarJogo);
-        playAgainBtn.addEventListener('click', () => {
-            resultadoDiv.style.display = 'none';
-            setupDiv.style.display = 'block';
-        });
     });
 </script>
 {% endblock %}

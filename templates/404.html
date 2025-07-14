@@ -6,19 +6,30 @@
 <div class="py-5 text-center">
     <h1 class="display-1">404</h1>
     <h2>Página Não Encontrada</h2>
-    <p class="lead text-muted mt-4">
-        A página que você procurou não existe ou está em manutenção.
-    </p>
-    <p>Esse é o mapa do site para facilitar as suas buscas.</p>
 
-    <div class="list-group w-50 mx-auto mt-4">
-        {% for link in site_map %}
-            <a href="{{ link.url }}" class="list-group-item list-group-item-action">
-                {{ link.nome }}
-            </a>
-        {% endfor %}
-    </div>
+    {% if user.is_authenticated %}
+        <p class="lead text-muted mt-4">
+            A página que você procurou não existe ou está em manutenção.
+        </p>
+        <p>Esse é o mapa do site para facilitar as suas buscas.</p>
 
-    <a href="{% url 'dashboard:home' %}" class="btn btn-primary mt-4">Voltar para o Dashboard</a>
+        <div class="list-group w-50 mx-auto mt-4">
+            {% for link in site_map %}
+                <a href="{{ link.url }}" class="list-group-item list-group-item-action">
+                    {{ link.nome }}
+                </a>
+            {% empty %}
+                <p class="text-danger">Não foi possível gerar o mapa do site.</p>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="lead text-muted mt-4">
+            O recurso que você procura não foi encontrado ou requer autenticação.
+        </p>
+        <a href="{% url 'usuarios:login' %}" class="btn btn-primary btn-lg mt-4">
+            Por gentileza, logue para visualizar
+        </a>
+    {% endif %}
+
 </div>
 {% endblock %}

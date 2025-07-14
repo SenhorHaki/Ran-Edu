@@ -4,6 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Recurso
 from .forms import RecursoForm
 from .permissions import IsProfessor 
+from rest_framework import viewsets, permissions
+from .serializers import RecursoSerializer
+
+class RecursoViewSet(viewsets.ModelViewSet):
+    queryset = Recurso.objects.all()
+    serializer_class = RecursoSerializer
+    permission_classes = [IsProfessor]
 
 class BibliotecaView(LoginRequiredMixin, View):
     login_url = '/admin/login/'
@@ -25,3 +32,4 @@ class BibliotecaView(LoginRequiredMixin, View):
 
         recursos = Recurso.objects.all()
         return render(request, self.template_name, {'form': form, 'recursos': recursos})
+   

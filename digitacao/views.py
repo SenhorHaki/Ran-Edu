@@ -2,6 +2,10 @@ from .serializers import LicaoDigitacaoSerializer, ResultadoDigitacaoSerializer
 
 from .models import LicaoDigitacao, ResultadoDigitacao
 
+
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from rest_framework import viewsets, mixins, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -38,10 +42,11 @@ class LicaoDigitacaoViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 class ResultadoDigitacaoViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    """ ViewSet para que um aluno possa salvar seu resultado. (Apenas criação) """
     queryset = ResultadoDigitacao.objects.all()
     serializer_class = ResultadoDigitacaoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]   
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+
 
 class GameView(LoginRequiredMixin, View):
     login_url = '/admin/login/'

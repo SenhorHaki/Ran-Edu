@@ -13,7 +13,6 @@ from .views import (
     ListaPostagensView 
 )
 
-app_name = 'cursos'
 
 router = DefaultRouter()
 router.register(r'cursos', CursoViewSet, basename='curso')
@@ -21,7 +20,6 @@ router.register(r'modulos', ModuloViewSet, basename='modulo')
 router.register(r'aulas', AulaViewSet, basename='aula')
 router.register(r'postagens', PostagemViewSet, basename='postagem')
 router.register(r'comentarios', ComentarioViewSet, basename='comentario')
-
 
 urlpatterns = [
     path('', include(router.urls)),    
