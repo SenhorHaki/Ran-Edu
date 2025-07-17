@@ -9,9 +9,9 @@
     <div id="setup-div">
         <h2>Escolha um Nível de Dificuldade</h2>
         <div class="d-grid gap-2 col-6 mx-auto mt-4">
-            <button class="btn btn-lg btn-success" data-dificuldade="FACIL">Fácil</button>
-            <button class="btn btn-lg btn-warning" data-dificuldade="MEDIO">Médio</button>
-            <button class="btn btn-lg btn-danger" data-dificuldade="DIFICIL">Difícil</button>
+            <button class="btn btn-lg btn-success btn-dificuldade" data-dificuldade="FACIL">Fácil</button>
+            <button class="btn btn-lg btn-warning btn-dificuldade" data-dificuldade="MEDIO">Médio</button>
+            <button class="btn btn-lg btn-danger btn-dificuldade" data-dificuldade="DIFICIL">Difícil</button>
         </div>
     </div>
 
@@ -32,8 +32,7 @@
         <p>Seu resultado foi salvo.</p>
         <div id="leaderboard-container" class="mt-4">
             <h3>Placar de Líderes</h3>
-            <table id="leaderboard-tabela" class="table w-75 mx-auto">
-                </table>
+            <table id="leaderboard-tabela" class="table w-75 mx-auto"></table>
         </div>
         <button id="play-again-btn" class="btn btn-primary btn-lg mt-3">Jogar Novamente</button>
     </div>
@@ -43,7 +42,6 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- 1. CONFIGURAÇÃO INICIAL E DADOS ---
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -58,25 +56,14 @@
             }
             return cookieValue;
         }
-        const csrftoken = getCookie('csrftoken');
 
+        const csrftoken = getCookie('csrftoken');
         const licoesJson = '{{ licoes_json|escapejs }}';
         let licoes = [];
-        try {
-            licoes = JSON.parse(licoesJson).map(item => ({ id: item.pk, ...item.fields }));
-        } catch (e) {
-            document.querySelector('.container').innerHTML = '<h1>Erro ao carregar lições do jogo.</h1>';
-            return;
-        }
-
         const licoesAgrupadas = { FACIL: [], MEDIO: [], DIFICIL: [] };
-        licoes.forEach(licao => {
-            if (licoesAgrupadas[licao.dificuldade]) {
-                licoesAgrupadas[licao.dificuldade].push(licao);
-            }
-        });
+        let licaoAtual;
+        let indexAtual = 0, erros = 0, startTime, timerInterval;
 
-        // --- 2. ELEMENTOS DA PÁGINA ---
         const setupDiv = document.getElementById('setup-div');
         const gameDiv = document.getElementById('game-div');
         const resultadoDiv = document.getElementById('resultado-div');
@@ -87,46 +74,34 @@
         const restartLessonBtn = document.getElementById('restart-lesson-btn');
         const playAgainBtn = document.getElementById('play-again-btn');
 
-        // --- 3. VARIÁVEIS DE ESTADO DO JOGO ---
-        let licaoAtual;
-        let indexAtual = 0, erros = 0, startTime, timerInterval;
-
-        // --- 4. EVENT LISTENERS ---
-        document.querySelectorAll('.btn-dificuldade').forEach(button => {
-            button.addEventListener('click', () => {
-                const dificuldade = button.dataset.dificuldade;
-                const licoesDoNivel = licoesAgrupadas[dificuldade];
-                if (licoesDoNivel && licoesDoNivel.length > 0) {
-                    licaoAtual = licoesDoNivel[Math.floor(Math.random() * licoesDoNivel.length)];
-                    iniciarJogo();
-                } else {
-                    alert(`Nenhuma lição encontrada para o nível ${dificuldade}. Cadastre no admin.`);
+        try {
+            licoes = JSON.parse(licoesJson).map(item => ({ id: item.pk, ...item.fields }));
+            licoes.forEach(licao => {
+                if (licoesAgrupadas[licao.dificuldade]) {
+                    licoesAgrupadas[licao.dificuldade].push(licao);
                 }
             });
-        });
-        
-        restartLessonBtn.addEventListener('click', iniciarJogo);
-        playAgainBtn.addEventListener('click', () => {
-            resultadoDiv.style.display = 'none';
-            setupDiv.style.display = 'block';
-        });
-
-        // --- 5. FUNÇÕES DO JOGO ---
-        function iniciarJogo() {
-            setupDiv.style.display = 'none';
-            resultadoDiv.style.display = 'none';
-            gameDiv.style.display = 'block';
-            indexAtual = 0;
-            erros = 0;
-            startTime = null;
-            clearInterval(timerInterval);
-            timerEl.textContent = '0s';
-            wpmEl.textContent = '0';
-            accuracyEl.textContent = '100%';
-            textoParaDigitarEl.innerHTML = licaoAtual.texto.split('').map(char => `<span>${char}</span>`).join('');
-            document.querySelectorAll('#texto-para-digitar span')[0].classList.add('cursor');
-            document.addEventListener('keydown', handleKeyPress);
+        } catch (e) {
+            document.querySelector('.container').innerHTML = '<h1>Erro Crítico ao Carregar Lições do Jogo.</h1>';
+            return;
         }
+
+            function iniciarJogo() {
+                setupDiv.style.display = 'none';
+                resultadoDiv.style.display = 'none';
+                gameDiv.style.display = 'block';
+
+                indexAtual = 0; erros = 0; startTime = null;
+                clearInterval(timerInterval);
+                timerEl.textContent = '0s';
+                wpmEl.textContent = '0';
+                accuracyEl.textContent = '100%';
+
+                textoParaDigitarEl.innerHTML = licaoAtual.texto.split('').map(char => `<span>${char}</span>`).join('');
+                textoParaDigitarEl.setAttribute('tabindex', '-1'); 
+                document.querySelectorAll('#texto-para-digitar span')[0].classList.add('cursor');
+                document.addEventListener('keydown', handleKeyPress);
+                textoParaDigitarEl.focus(); 
 
         function handleKeyPress(e) {
             e.preventDefault();
@@ -150,10 +125,10 @@
             indexAtual++;
             if (indexAtual < spans.length) { spans[indexAtual].classList.add('cursor'); } else { finalizarJogo(); }
         }
-        
+
         function atualizarStats() {
             if (!startTime) return;
-            const tempoDecorrido = Math.floor((new Date() - startTime) / 1000);
+            const tempoDecorrido = Math.round(((new Date() - startTime) / 1000));
             timerEl.textContent = `${tempoDecorrido}s`;
             const palavrasDigitadas = (indexAtual / 5);
             const minutos = tempoDecorrido / 60;
@@ -169,35 +144,49 @@
             atualizarStats();
             
             const postHeaders = { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken };
-
             try {
-                // Salva o resultado do jogador
                 await fetch('/api/digitacao/resultados/', {
                     method: 'POST',
                     headers: postHeaders,
                     body: JSON.stringify({ licao: licaoAtual.id, palavras_por_minuto: parseInt(wpmEl.textContent), precisao: parseFloat(accuracyEl.textContent) })
                 });
-
-                // Busca o leaderboard atualizado
                 const lbResponse = await fetch(`/api/digitacao/licoes/${licaoAtual.id}/leaderboard/`);
                 const lbData = await lbResponse.json();
-                
-                // Monta a tabela do leaderboard
                 const tabela = document.getElementById('leaderboard-tabela');
                 tabela.innerHTML = '<thead><tr><th>#</th><th>Jogador</th><th>PPM</th><th>Precisão</th></tr></thead><tbody></tbody>';
                 const corpoTabela = tabela.querySelector('tbody');
                 lbData.forEach((resultado, index) => {
                     corpoTabela.innerHTML += `<tr><td class="fw-bold">${index + 1}</td><td>${resultado.aluno_username}</td><td>${resultado.palavras_por_minuto}</td><td>${resultado.precisao.toFixed(1)}%</td></tr>`;
                 });
-
             } catch(error) { 
                 console.error('Falha ao salvar ou buscar resultados:', error);
                 document.getElementById('leaderboard-container').innerHTML = '<p class="text-danger">Não foi possível carregar o placar.</p>';
             }
-
             gameDiv.style.display = 'none';
             resultadoDiv.style.display = 'block';
         }
-    });
+
+        document.querySelectorAll('.btn-dificuldade').forEach(button => {
+            button.addEventListener('click', () => {
+
+                const dificuldade = button.dataset.dificuldade;
+                const licoesDoNivel = licoesAgrupadas[dificuldade];
+
+                console.log("Dificuldade clicada:", dificuldade);
+                console.log("Lições encontradas para este nível:", licoesDoNivel);
+                
+                if (licoesDoNivel && licoesDoNivel.length > 0) {
+                    licaoAtual = licoesDoNivel[Math.floor(Math.random() * licoesDoNivel.length)];
+                    iniciarJogo();
+                } else {
+                    alert(`Nenhuma lição encontrada para o nível ${dificuldade}.`);
+                }
+            });
+        });
+
+
+
+}
+
 </script>
 {% endblock %}
