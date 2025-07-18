@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'biblioteca.apps.BibliotecaConfig',
     'agendamento.apps.AgendamentoConfig',
     'digitacao.apps.DigitacaoConfig',
-   
+
 ]
 
 
@@ -48,7 +48,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates',
-                 BASE_DIR / 'gamificacao/templates',
+                BASE_DIR / 'gamificacao/templates',
                 ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -103,6 +103,10 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+]
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
 ]
 
 
